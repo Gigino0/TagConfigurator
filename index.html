@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dial — Configuratore Tag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Great+Vibes&family=Playfair+Display:wght@600;700&family=Caveat:wght@500;700&family=Oswald:wght@500;700&family=Quicksand:wght@500;700&family=Cinzel:wght@600;700&family=Permanent+Marker&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#131210; --bg-2:#1c1a17; --panel:#1f1d19; --panel-2:#252220; --line:#38352f;
+  --steel-1:#e9e7e1; --steel-2:#b8b5aa; --steel-3:#6f6c62; --ink:#141310;
+  --ember:#ff5a2e; --ember-dim:#7a2c17; --brass:#c69a3b;
+  --text-1:#efece5; --text-2:#a7a297; --text-3:#6f6b60;
+  --font-display:'Big Shoulders Stencil', sans-serif; --font-body:'Inter', sans-serif; --font-mono:'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box;}
+body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--font-body); -webkit-font-smoothing:antialiased; }
+.app{ max-width:1100px; margin:0 auto; padding:26px 24px 60px; }
+.topbar{ display:flex; align-items:center; justify-content:space-between; padding-bottom:20px; border-bottom:1px solid var(--line); margin-bottom:8px; }
+.brand{ display:flex; align-items:baseline; gap:10px; }
+.brand-mark{ font-family:var(--font-display); font-weight:700; font-size:22px; letter-spacing:0.02em; }
+.brand-sub{ font-family:var(--font-mono); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-3); }
+.steps{ display:flex; gap:2px; font-family:var(--font-mono); font-size:11px; letter-spacing:0.04em; }
+.step-pill{ padding:7px 14px; color:var(--text-3); border-bottom:2px solid transparent; cursor:pointer; transition:color .15s; text-transform:uppercase; user-select:none; }
+.step-pill:hover{ color:var(--text-2); }
+.step-pill.active{ color:var(--ember); border-bottom-color:var(--ember); }
+.step-pill.done{ color:var(--steel-2); }
+
+.step-head{ text-align:center; padding:34px 0 6px; }
+.step-num{ font-family:var(--font-mono); font-size:12px; color:var(--ember); letter-spacing:0.1em; margin-bottom:6px; }
+.step-title{ font-family:var(--font-display); font-size:34px; font-weight:600; margin:0 0 8px; letter-spacing:0.01em; }
+.step-sub{ font-size:14px; color:var(--text-2); margin:0 auto; max-width:440px; line-height:1.5; }
+
+.control-bar{ display:flex; justify-content:center; margin:22px 0 6px; }
+.text-input-row{ display:flex; gap:0; width:100%; max-width:380px; }
+.text-input{ flex:1; background:var(--panel-2); border:1px solid var(--line); border-right:none; color:var(--text-1); font-family:var(--font-body); font-size:15px; padding:12px 14px; border-radius:2px 0 0 2px; }
+.text-input:focus{ outline:none; border-color:var(--ember); }
+.text-input-btn{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.04em; padding:0 18px; background:var(--ember); border:1px solid var(--ember); color:#1a0d06; cursor:pointer; border-radius:0 2px 2px 0; font-weight:500; }
+
+.cat-tabs{ display:flex; flex-wrap:wrap; gap:6px; justify-content:center; max-width:560px; margin:0 auto 14px; }
+.cat-tab{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.03em; padding:6px 11px; border:1px solid var(--line); border-radius:2px; color:var(--text-2); cursor:pointer; background:var(--panel-2); }
+.cat-tab:hover{ border-color:var(--steel-3); }
+.cat-tab.active{ border-color:var(--ember); color:var(--ember); }
+.icon-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; max-width:420px; margin:0 auto 10px; max-height:260px; overflow-y:auto; padding:4px 6px 4px 0; }
+.icon-grid::-webkit-scrollbar{ width:6px; }
+.icon-grid::-webkit-scrollbar-thumb{ background:var(--line); border-radius:3px; }
+.icon-grid::-webkit-scrollbar-track{ background:transparent; }
+.icon-card{ aspect-ratio:1; border:1px solid var(--line); border-radius:3px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.icon-card:hover{ border-color:var(--ember); }
+.icon-card svg{ width:20px; height:20px; stroke:var(--text-1); fill:none; }
+.icon-card.glyph{ font-size:16px; color:var(--text-1); }
+
+.orbit-wrap{ position:relative; width:100%; max-width:760px; height:800px; margin:10px auto 0; }
+.tag-center{ position:absolute; left:50%; top:56%; transform:translate(-50%,-50%); width:320px; display:flex; flex-direction:column; align-items:center; gap:14px; z-index:2; }
+.tag-wrap{ width:300px; height:300px; }
+.tag-wrap svg{ width:100%; height:100%; overflow:visible; }
+.stage-readout{ display:flex; gap:14px; font-family:var(--font-mono); font-size:9.5px; letter-spacing:0.04em; color:var(--text-3); text-transform:uppercase; }
+.stage-readout b{ color:var(--steel-2); font-weight:500; }
+
+.drag-el{ cursor:grab; touch-action:none; }
+.drag-el:active{ cursor:grabbing; }
+.drag-el.selected .sel-box{ opacity:1; }
+.sel-box{ opacity:0; transition:opacity .1s; }
+.handle{ opacity:0; pointer-events:none; }
+.drag-el.selected .handle{ opacity:1; pointer-events:auto; }
+.rotate-line{ stroke:#ff5a2e; stroke-width:1.3; }
+.rotate-handle{ fill:#ff5a2e; cursor:grab; }
+.rotate-handle:active{ cursor:grabbing; }
+.resize-handle{ fill:#ff5a2e; cursor:nwse-resize; }
+@keyframes placeFlash{
+  0%{ filter: brightness(1) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+  30%{ filter: brightness(2.6) drop-shadow(0 0 8px rgba(255,255,255,0.9)); }
+  100%{ filter: brightness(1) drop-shadow(0 0 0 rgba(255,255,255,0)); }
+}
+.just-placed{ animation: placeFlash 0.6s ease-out; }
+
+.hole-toggle{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-2); background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:20px; }
+.switch{ width:34px; height:19px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; position:relative; cursor:pointer; flex-shrink:0; }
+.switch.on{ background:var(--ember-dim); border-color:var(--ember); }
+.switch .knob{ width:13px; height:13px; background:var(--text-2); border-radius:50%; position:absolute; top:2px; left:2px; transition:left .15s, background .15s; }
+.switch.on .knob{ left:17px; background:var(--ember); }
+
+.orbit-item{ position:absolute; width:150px; z-index:3; }
+.shape-card{ border:1px solid var(--line); border-radius:3px; padding:14px 8px 10px; background:var(--panel-2); cursor:pointer; text-align:center; transition:border-color .12s, transform .12s; }
+.shape-card:hover{ border-color:var(--steel-3); transform:translateY(-2px); }
+.shape-card.active{ border-color:var(--ember); }
+.shape-card svg{ width:44px; height:44px; }
+.shape-card .name{ font-size:10.5px; color:var(--text-2); margin-top:6px; font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.03em; }
+
+.satellite{ background:var(--panel); border:1px solid var(--line); border-radius:4px; padding:0; overflow:hidden; transition:box-shadow .15s, border-color .15s; }
+.satellite.unplaced{ border-color:var(--ember); box-shadow:0 0 0 1px var(--ember-dim); }
+.sat-preview-drag{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:var(--panel-2); border-bottom:1px dashed var(--steel-3); padding:12px 8px; cursor:grab; touch-action:none; min-height:54px; }
+.sat-preview-drag:active{ cursor:grabbing; }
+.sat-preview-text{ font-size:16px; color:var(--text-1); max-width:130px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sat-preview-icon svg{ width:24px; height:24px; stroke:var(--text-1); fill:none; }
+.sat-preview-icon .glyph{ font-size:20px; color:var(--text-1); }
+.sat-drag-label{ font-family:var(--font-mono); font-size:8.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-3); }
+.sat-controls{ padding:9px 10px 10px; }
+.sat-text-input{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:12px; padding:6px 7px; border-radius:2px; margin-bottom:7px; }
+.sat-select{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:11px; padding:6px 6px; border-radius:2px; margin-bottom:7px; }
+.sat-fill-toggle{ display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; margin-bottom:7px; }
+.sat-fill-toggle button{ flex:1; background:var(--panel-2); border:none; color:var(--text-3); font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; padding:6px 2px; cursor:pointer; }
+.sat-fill-toggle button.active{ background:var(--ember-dim); color:var(--ember); }
+.sat-row{ display:flex; align-items:center; justify-content:space-between; gap:6px; }
+.sat-size{ display:flex; align-items:center; gap:6px; }
+.sat-size button{ width:22px; height:22px; border:1px solid var(--line); background:var(--panel-2); color:var(--text-2); cursor:pointer; border-radius:2px; font-size:13px; line-height:1; }
+.sat-size button:hover{ border-color:var(--steel-3); color:var(--text-1); }
+.sat-size span{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-3); min-width:22px; text-align:center; }
+.sat-del{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; color:var(--text-3); cursor:pointer; }
+.sat-del:hover{ color:var(--ember); }
+.floating-clone{ position:fixed; z-index:999; pointer-events:none; opacity:0.92; background:var(--panel-2); border:1.5px solid var(--ember); border-radius:4px; display:flex; align-items:center; justify-content:center; box-sizing:border-box; overflow:hidden; }
+.floating-clone .sat-preview-icon svg{ width:24px; height:24px; stroke:var(--text-1); fill:none; }
+.floating-clone .sat-preview-icon .glyph{ font-size:20px; color:var(--text-1); }
+.floating-clone .sat-preview-text{ font-size:15px; color:var(--text-1); white-space:nowrap; }
+
+.nav-row{ display:flex; justify-content:center; gap:10px; margin-top:26px; }
+.btn{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.04em; text-transform:uppercase; padding:11px 22px; border-radius:2px; border:1px solid var(--line); background:transparent; color:var(--text-2); cursor:pointer; transition:all .12s; }
+.btn:hover{ border-color:var(--steel-3); color:var(--text-1); }
+.btn-primary{ background:var(--ember); border-color:var(--ember); color:#1a0d06; font-weight:500; }
+.btn-primary:hover{ background:#ff6e46; border-color:#ff6e46; }
+.btn:disabled{ opacity:0.3; cursor:default; pointer-events:none; }
+.empty-hint{ font-size:12px; color:var(--text-3); text-align:center; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><span class="brand-mark">DIAL</span><span class="brand-sub">Configuratore tag</span></div>
+    <div class="steps" id="steps"></div>
+  </div>
+  <div class="step-head">
+    <div class="step-num" id="stepNum"></div>
+    <h1 class="step-title" id="stepTitle"></h1>
+    <p class="step-sub" id="stepSub"></p>
+  </div>
+  <div class="control-bar" id="controlBar"></div>
+  <div class="orbit-wrap" id="orbitWrap">
+    <div class="tag-center" id="tagCenter">
+      <div class="tag-wrap" id="tagWrap"></div>
+      <div class="stage-readout">
+        <span>MATERIALE <b>ACCIAIO INOX</b></span>
+        <span id="readoutShape">FORMA <b></b></span>
+      </div>
+      <div id="holeToggleWrap"></div>
+    </div>
+  </div>
+  <div class="nav-row" id="navRow"></div>
+</div>
+<script>
+const STEPS = ['forma','testo','icone'];
+const STEP_META = {
+  forma:{n:'01', title:'Scelta della forma', sub:'Scegli la sagoma che darà identità alla tua tag.'},
+  testo:{n:'02', title:'Testo', sub:'Scrivi cosa vuoi vedere inciso, poi trascinalo dove preferisci.'},
+  icone:{n:'03', title:'Icone', sub:'Aggiungi simboli e decorazioni, uno o più di uno.'}
+};
+
+const state = {
+  step: 0,
+  shape: 'round',
+  hole: true,
+  elements: [],
+  selectedId: null,
+  activeCat: 'natura',
+  pendingFont: 'sans',
+  nextId: 1
+};
+
+const SHAPES = {
+  round: { label:'Rotonda' },
+  oval:  { label:'Ovale' },
+  rect:  { label:'Rettang.' },
+  bone:  { label:'A osso' }
+};
+const SHAPE_ORBIT_POS = {
+  round: {left:'2%', top:'6%'},
+  oval:  {right:'2%', top:'6%'},
+  rect:  {left:'2%', top:'62%'},
+  bone:  {right:'2%', top:'62%'}
+};
+
+const SHAPE_HOLE = {
+  round: { x:170, ringY:26, holeY:42 },
+  oval:  { x:170, ringY:60, holeY:82 },
+  rect:  { x:170, ringY:60, holeY:82 },
+  bone:  { x:250, ringY:58, holeY:80 }
+};
+
+function shapePathD(shape){
+  if(shape==='bone') return 'M95,120 C60,120 60,60 95,60 C120,60 120,90 140,90 L200,90 C220,90 220,60 245,60 C280,60 280,120 245,120 C232,120 226,142 226,170 C226,198 232,220 245,220 C280,220 280,280 245,280 C220,280 220,250 200,250 L140,250 C120,250 120,280 95,280 C60,280 60,220 95,220 C108,220 114,198 114,170 C114,142 108,120 95,120 Z';
+  return null;
+}
+function shapeClipContent(){
+  const s = state.shape;
+  if(s==='round') return '<circle cx="170" cy="170" r="140"/>';
+  if(s==='oval') return '<ellipse cx="170" cy="170" rx="152" ry="102"/>';
+  if(s==='rect') return '<rect x="38" y="68" width="264" height="204" rx="26"/>';
+  if(s==='bone') return `<path d="${shapePathD('bone')}"/>`;
+  return '';
+}
+function shapeOutlineSVG(){
+  const s = state.shape;
+  if(s==='round') return '<circle cx="170" cy="170" r="140" fill="url(#metalFill)" stroke="#3a3833" stroke-width="1.5"/>';
+  if(s==='oval') return '<ellipse cx="170" cy="170" rx="152" ry="102" fill="url(#metalFill)" stroke="#3a3833" stroke-width="1.5"/>';
+  if(s==='rect') return '<rect x="38" y="68" width="264" height="204" rx="26" fill="url(#metalFill)" stroke="#3a3833" stroke-width="1.5"/>';
+  if(s==='bone') return `<path d="${shapePathD('bone')}" fill="url(#metalFill)" stroke="#3a3833" stroke-width="1.5"/>`;
+  return '';
+}
+function shapePreviewSVG(shape){
+  if(shape==='round') return `<svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="21" fill="none" stroke="var(--steel-2)" stroke-width="2"/></svg>`;
+  if(shape==='oval') return `<svg viewBox="0 0 52 52"><ellipse cx="26" cy="26" rx="23" ry="15" fill="none" stroke="var(--steel-2)" stroke-width="2"/></svg>`;
+  if(shape==='rect') return `<svg viewBox="0 0 52 52"><rect x="6" y="12" width="40" height="28" rx="6" fill="none" stroke="var(--steel-2)" stroke-width="2"/></svg>`;
+  if(shape==='bone') return `<svg viewBox="0 0 340 340"><path d="${shapePathD('bone')}" fill="none" stroke="var(--steel-2)" stroke-width="7"/></svg>`;
+  return '';
+}
+
+const ICONS = {
+  natura: [
+    {id:'sole', d:'M8 12a4 4 0 1 0 8 0a4 4 0 1 0 -8 0', extra:'<path d="M3 12h1m8 -9v1m8 8h1m-9 8v1m-6.4 -15.4l.7 .7m12.1 -.7l-.7 .7m0 11.4l.7 .7m-12.1 -.7l-.7 .7"/>'},
+    {id:'foglia', d:'M5 21c.5 -4.5 2.5 -8 7 -10', extra:'<path d="M9 18c6.218 0 10.5 -3.288 11 -12v-2h-4.014c-9 0 -11.986 4 -12 9c0 1 0 3 2 5h3l.014 0"/>'},
+    {id:'goccia', d:'M7.502 19.423c2.602 2.105 6.395 2.105 8.996 0c2.602 -2.105 3.262 -5.708 1.566 -8.546l-4.89 -7.26c-.42 -.625 -1.287 -.803 -1.936 -.397a1.376 1.376 0 0 0 -.41 .397l-4.893 7.26c-1.695 2.838 -1.035 6.441 1.567 8.546'},
+    {id:'montagna', d:'M3 20h18l-6.921 -14.612a2.3 2.3 0 0 0 -4.158 0l-6.921 14.612', extra:'<path d="M7.5 11l2 2.5l2.5 -2.5l2 3l2.5 -2"/>'},
+    {id:'albero', d:'M12 13l-2 -2', extra:'<path d="M12 12l2 -2"/><path d="M12 21v-13"/><path d="M9.824 16a3 3 0 0 1 -2.743 -3.69a3 3 0 0 1 .304 -4.833a3 3 0 0 1 4.615 -3.707a3 3 0 0 1 4.614 3.707a3 3 0 0 1 .305 4.833a3 3 0 0 1 -2.919 3.695h-4l-.176 -.005"/>'},
+    {id:'fiore', d:'M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0', extra:'<path d="M12 2a3 3 0 0 1 3 3c0 .562 -.259 1.442 -.776 2.64l-.724 1.36l1.76 -1.893c.499 -.6 .922 -1 1.27 -1.205a2.968 2.968 0 0 1 4.07 1.099a3.011 3.011 0 0 1 -1.09 4.098c-.374 .217 -.99 .396 -1.846 .535l-2.664 .366l2.4 .326c1 .145 1.698 .337 2.11 .576a3.011 3.011 0 0 1 1.09 4.098a2.968 2.968 0 0 1 -4.07 1.098c-.348 -.202 -.771 -.604 -1.27 -1.205l-1.76 -1.893l.724 1.36c.516 1.199 .776 2.079 .776 2.64a3 3 0 0 1 -6 0c0 -.562 .259 -1.442 .776 -2.64l.724 -1.36l-1.76 1.893c-.499 .601 -.922 1 -1.27 1.205a2.968 2.968 0 0 1 -4.07 -1.098a3.011 3.011 0 0 1 1.09 -4.098c.374 -.218 .99 -.396 1.846 -.536l2.664 -.366l-2.4 -.325c-1 -.145 -1.698 -.337 -2.11 -.576a3.011 3.011 0 0 1 -1.09 -4.099a2.968 2.968 0 0 1 4.07 -1.099c.348 .203 .771 .604 1.27 1.205l1.76 1.894c-1 -2.292 -1.5 -3.625 -1.5 -4a3 3 0 0 1 3 -3"/>'},
+    {id:'neve', d:'M10 4l2 1l2 -1', extra:'<path d="M12 2v6.5l3 1.72"/><path d="M17.928 6.268l.134 2.232l1.866 1.232"/><path d="M20.66 7l-5.629 3.25l.01 3.458"/><path d="M19.928 14.268l-1.866 1.232l-.134 2.232"/><path d="M20.66 17l-5.629 -3.25l-2.99 1.738"/><path d="M14 20l-2 -1l-2 1"/><path d="M12 22v-6.5l-3 -1.72"/><path d="M6.072 17.732l-.134 -2.232l-1.866 -1.232"/><path d="M3.34 17l5.629 -3.25l-.01 -3.458"/><path d="M4.072 9.732l1.866 -1.232l.134 -2.232"/><path d="M3.34 7l5.629 3.25l2.99 -1.738"/>'},
+    {id:'vento', d:'M5 8h8.5a2.5 2.5 0 1 0 -2.34 -3.24', extra:'<path d="M3 12h15.5a2.5 2.5 0 1 1 -2.34 3.24"/><path d="M4 16h5.5a2.5 2.5 0 1 1 -2.34 3.24"/>'},
+    {id:'nuvola', d:'M6.657 18c-2.572 0 -4.657 -2.007 -4.657 -4.483c0 -2.475 2.085 -4.482 4.657 -4.482c.393 -1.762 1.794 -3.2 3.675 -3.773c1.88 -.572 3.956 -.193 5.444 1c1.488 1.19 2.162 3.007 1.77 4.769h.99c1.913 0 3.464 1.56 3.464 3.486c0 1.927 -1.551 3.487 -3.465 3.487h-11.878'},
+    {id:'arcobaleno', d:'M22 17c0 -5.523 -4.477 -10 -10 -10c-5.523 0 -10 4.477 -10 10', extra:'<path d="M18 17a6 6 0 1 0 -12 0"/><path d="M14 17a2 2 0 1 0 -4 0"/>'},
+    {id:'cactus', d:'M6 9v1a3 3 0 0 0 3 3h1', extra:'<path d="M18 8v5a3 3 0 0 1 -3 3h-1"/><path d="M10 21v-16a2 2 0 1 1 4 0v16"/><path d="M7 21h10"/>'},
+    {id:'pianta', d:'M7 15h10v4a2 2 0 0 1 -2 2h-6a2 2 0 0 1 -2 -2v-4', extra:'<path d="M12 9a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3"/><path d="M12 11a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3"/><path d="M12 15l0 -6"/>'},
+    {id:'tramonto', d:'M3 17h1m16 0h1m-15.4 -6.4l.7 .7m12.1 -.7l-.7 .7m-9.7 5.7a4 4 0 0 1 8 0', extra:'<path d="M3 21l18 0"/><path d="M12 3v6l3 -3m-6 0l3 3"/>'},
+    {id:'fiamma', d:'M12 10.941c2.333 -3.308 .167 -7.823 -1 -8.941c0 3.395 -2.235 5.299 -3.667 6.706c-1.43 1.408 -2.333 3.294 -2.333 5.588c0 3.704 3.134 6.706 7 6.706c3.866 0 7 -3.002 7 -6.706c0 -1.712 -1.232 -4.403 -2.333 -5.588c-2.084 3.353 -3.257 3.353 -4.667 2.235'},
+    {id:'germoglio', d:'M12 10a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3', extra:'<path d="M12 14a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3"/><path d="M12 20l0 -10"/>'}
+  ],
+  festivita: [
+    {id:'regalo', d:'M3 9a1 1 0 0 1 1 -1h16a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1l0 -2', extra:'<path d="M12 8l0 13"/><path d="M19 12v7a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0 -5a4.8 8 0 0 1 4.5 5a4.8 8 0 0 1 4.5 -5a2.5 2.5 0 0 1 0 5"/>'},
+    {id:'stella', d:'M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873l-6.158 -3.245'},
+    {id:'croce', d:'M10 21h4v-9h5v-4h-5v-5h-4v5h-5v4h5l0 9'},
+    {id:'cuore', d:'M19.5 12.572l-7.5 7.428l-7.5 -7.428a5 5 0 1 1 7.5 -6.566a5 5 0 1 1 7.5 6.572'},
+    {id:'campana', d:'M10 5a2 2 0 1 1 4 0a7 7 0 0 1 4 6v3a4 4 0 0 0 2 3h-16a4 4 0 0 0 2 -3v-3a7 7 0 0 1 4 -6', extra:'<path d="M9 17v1a3 3 0 0 0 6 0v-1"/>'},
+    {id:'uovo', d:'M19 14.083c0 4.154 -2.966 6.74 -7 6.917c-4.2 0 -7 -2.763 -7 -6.917c0 -5.538 3.5 -11.09 7 -11.083c3.5 .007 7 5.545 7 11.083'},
+    {id:'abete', d:'M12 3l4 4l-2 1l4 4l-3 1l4 4h-14l4 -4l-3 -1l4 -4l-2 -1l4 -4', extra:'<path d="M14 17v3a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1v-3"/>'},
+    {id:'candela', d:'M9 21h6v-10a1 1 0 0 0 -1 -1h-4a1 1 0 0 0 -1 1l0 10', extra:'<path d="M12 2l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737"/>'},
+    {id:'palloncino', d:'M14 8a2 2 0 0 0 -2 -2', extra:'<path d="M6 8a6 6 0 1 1 12 0c0 4.97 -2.686 9 -6 9s-6 -4.03 -6 -9"/><path d="M12 17v1a2 2 0 0 1 -2 2h-3a2 2 0 0 0 -2 2"/>'},
+    {id:'torta', d:'M3 20h18v-8a3 3 0 0 0 -3 -3h-12a3 3 0 0 0 -3 3v8', extra:'<path d="M3 14.803c.312 .135 .654 .204 1 .197a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1a2.4 2.4 0 0 0 2 -1a2.4 2.4 0 0 1 2 -1a2.4 2.4 0 0 1 2 1a2.4 2.4 0 0 0 2 1c.35 .007 .692 -.062 1 -.197"/><path d="M12 4l1.465 1.638a2 2 0 1 1 -3.015 .099l1.55 -1.737"/>'},
+    {id:'coriandoli', d:'M4 5h2', extra:'<path d="M5 4v2"/><path d="M11.5 4l-.5 2"/><path d="M18 5h2"/><path d="M19 4v2"/><path d="M15 9l-1 1"/><path d="M18 13l2 -.5"/><path d="M18 19h2"/><path d="M19 18v2"/><path d="M14 16.518l-6.518 -6.518l-4.39 9.58a1 1 0 0 0 1.329 1.329l9.579 -4.39"/>'},
+    {id:'trofeo', d:'M8 21l8 0', extra:'<path d="M12 17l0 4"/><path d="M7 4l10 0"/><path d="M17 4v8a5 5 0 0 1 -10 0v-8"/><path d="M3 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>'},
+    {id:'medaglia', d:'M12 4v3m-4 -3v6m8 -6v6', extra:'<path d="M12 18.5l-3 1.5l.5 -3.5l-2 -2l3 -.5l1.5 -3l1.5 3l3 .5l-2 2l.5 3.5l-3 -1.5"/>'},
+    {id:'corona', d:'M12 6l4 6l5 -4l-2 10h-14l-2 -10l5 4l4 -6'},
+    {id:'premio', d:'M6 9a6 6 0 1 0 12 0a6 6 0 1 0 -12 0', extra:'<path d="M12 15l3.4 5.89l1.598 -3.233l3.598 .232l-3.4 -5.889"/><path d="M6.802 12l-3.4 5.89l3.598 -.233l1.598 3.232l3.4 -5.889"/>'}
+  ],
+  animali: [
+    {id:'zampa', d:'M14.7 13.5c-1.1 -2 -1.441 -2.5 -2.7 -2.5c-1.259 0 -1.736 .755 -2.836 2.747c-.942 1.703 -2.846 1.845 -3.321 3.291c-.097 .265 -.145 .677 -.143 .962c0 1.176 .787 2 1.8 2c1.259 0 3 -1 4.5 -1s3.241 1 4.5 1c1.013 0 1.8 -.823 1.8 -2c0 -.285 -.049 -.697 -.146 -.962c-.475 -1.451 -2.512 -1.835 -3.454 -3.538', extra:'<path d="M20.188 8.082a1.039 1.039 0 0 0 -.406 -.082h-.015c-.735 .012 -1.56 .75 -1.993 1.866c-.519 1.335 -.28 2.7 .538 3.052c.129 .055 .267 .082 .406 .082c.739 0 1.575 -.742 2.011 -1.866c.516 -1.335 .273 -2.7 -.54 -3.052l-.001 0"/><path d="M9.474 9c.055 0 .109 0 .163 -.011c.944 -.128 1.533 -1.346 1.32 -2.722c-.203 -1.297 -1.047 -2.267 -1.932 -2.267c-.055 0 -.109 0 -.163 .011c-.944 .128 -1.533 1.346 -1.32 2.722c.204 1.293 1.048 2.267 1.933 2.267"/><path d="M16.456 6.733c.214 -1.376 -.375 -2.594 -1.32 -2.722a1.164 1.164 0 0 0 -.162 -.011c-.885 0 -1.728 .97 -1.93 2.267c-.214 1.376 .375 2.594 1.32 2.722c.054 .007 .108 .011 .162 .011c.885 0 1.73 -.974 1.93 -2.267"/><path d="M5.69 12.918c.816 -.352 1.054 -1.719 .536 -3.052c-.436 -1.124 -1.271 -1.866 -2.009 -1.866c-.14 0 -.277 .027 -.407 .082c-.816 .352 -1.054 1.719 -.536 3.052c.436 1.124 1.271 1.866 2.009 1.866c.14 0 .277 -.027 .407 -.082"/>'},
+    {id:'osso', d:'M15 3a3 3 0 0 1 3 3a3 3 0 1 1 -2.12 5.122l-4.758 4.758a3 3 0 1 1 -5.117 2.297l0 -.177l-.176 0a3 3 0 1 1 2.298 -5.115l4.758 -4.758a3 3 0 0 1 2.12 -5.122l-.005 -.005'},
+    {id:'pesce', d:'M16.69 7.44a6.973 6.973 0 0 0 -1.69 4.56c0 1.747 .64 3.345 1.699 4.571', extra:'<path d="M2 9.504c7.715 8.647 14.75 10.265 20 2.498c-5.25 -7.761 -12.285 -6.142 -20 2.504"/><path d="M18 11v.01"/><path d="M11.5 10.5c-.667 1 -.667 2 0 3"/>'},
+    {id:'gatto', d:'M20 3v10a8 8 0 1 1 -16 0v-10l3.432 3.432a7.963 7.963 0 0 1 4.568 -1.432c1.769 0 3.403 .574 4.728 1.546l3.272 -3.546', extra:'<path d="M2 16h5l-4 4"/><path d="M22 16h-5l4 4"/><path d="M11 16a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M9 11v.01"/><path d="M15 11v.01"/>'},
+    {id:'cane', d:'M11 5h2', extra:'<path d="M19 12c-.667 5.333 -2.333 8 -5 8h-4c-2.667 0 -4.333 -2.667 -5 -8"/><path d="M11 16c0 .667 .333 1 1 1s1 -.333 1 -1h-2"/><path d="M12 18v2"/><path d="M10 11v.01"/><path d="M14 11v.01"/><path d="M5 4l6 .97l-6.238 6.688a1.021 1.021 0 0 1 -1.41 .111a.953 .953 0 0 1 -.327 -.954l1.975 -6.815"/><path d="M19 4l-6 .97l6.238 6.688c.358 .408 .989 .458 1.41 .111a.953 .953 0 0 0 .327 -.954l-1.975 -6.815"/>'},
+    {id:'ape', d:'M9 9v-1a3 3 0 0 1 6 0v1', extra:'<path d="M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3"/><path d="M3 13l4 0"/><path d="M17 13l4 0"/><path d="M12 20l0 -6"/><path d="M4 19l3.35 -2"/><path d="M20 19l-3.35 -2"/><path d="M4 7l3.75 2.4"/><path d="M20 7l-3.75 2.4"/>'},
+    {id:'farfalla', d:'M12 18.176a3 3 0 1 1 -4.953 -2.449l-.025 .023a4.502 4.502 0 0 1 1.483 -8.75c1.414 0 2.675 .652 3.5 1.671a4.5 4.5 0 1 1 4.983 7.079a3 3 0 1 1 -4.983 2.25l-.005 .176', extra:'<path d="M12 19v-10"/><path d="M9 3l3 2l3 -2"/>'},
+    {id:'ragno', d:'M5 4v2l5 5', extra:'<path d="M2.5 9.5l1.5 1.5h6"/><path d="M4 19v-2l6 -6"/><path d="M19 4v2l-5 5"/><path d="M21.5 9.5l-1.5 1.5h-6"/><path d="M20 19v-2l-6 -6"/><path d="M8 15a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"/><path d="M10 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/>'},
+    {id:'cavallo', d:'M7 10l-.85 8.507a1.357 1.357 0 0 0 1.35 1.493h.146a2 2 0 0 0 1.857 -1.257l.994 -2.486a2 2 0 0 1 1.857 -1.257h1.292a2 2 0 0 1 1.857 1.257l.994 2.486a2 2 0 0 0 1.857 1.257h.146a1.37 1.37 0 0 0 1.364 -1.494l-.864 -9.506h-8c0 -3 -3 -5 -6 -5l-3 6l2 2l3 -2', extra:'<path d="M22 14v-2a3 3 0 0 0 -3 -3"/>'},
+    {id:'cervo', d:'M3 3c0 2 1 3 4 3c2 0 3 1 3 3', extra:'<path d="M21 3c0 2 -1 3 -4 3c-2 0 -3 .333 -3 3"/><path d="M12 18c-1 0 -4 -3 -4 -6c0 -2 1.333 -3 4 -3s4 1 4 3c0 3 -3 6 -4 6"/><path d="M15.185 14.889l.095 -.18a4 4 0 1 1 -6.56 0"/><path d="M17 3c0 1.333 -.333 2.333 -1 3"/><path d="M7 3c0 1.333 .333 2.333 1 3"/><path d="M7 6c-2.667 .667 -4.333 1.667 -5 3"/><path d="M17 6c2.667 .667 4.333 1.667 5 3"/><path d="M8.5 10l-1.5 -1"/><path d="M15.5 10l1.5 -1"/><path d="M12 15h.01"/>'}
+    ,{id:'chiocciola', d:'M12 21a8 8 0 1 1 0-16 6 6 0 1 1 0 12 4 4 0 1 1 0-8'}
+  ],
+  forme: [
+    {id:'cerchio', d:'M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0'},
+    {id:'triangolo', d:'M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0'},
+    {id:'esagono', d:'M19.875 6.27a2.225 2.225 0 0 1 1.125 1.948v7.284c0 .809 -.443 1.555 -1.158 1.948l-6.75 4.27a2.269 2.269 0 0 1 -2.184 0l-6.75 -4.27a2.225 2.225 0 0 1 -1.158 -1.948v-7.285c0 -.809 .443 -1.554 1.158 -1.947l6.75 -3.98a2.33 2.33 0 0 1 2.25 0l6.75 3.98h-.033'},
+    {id:'rombo', d:'M6 5h12l3 5l-8.5 9.5a.7 .7 0 0 1 -1 0l-8.5 -9.5l3 -5', extra:'<path d="M10 12l-2 -2.2l.6 -1"/>'},
+    {id:'pentagono', d:'M13.163 2.168l8.021 5.828c.694 .504 .984 1.397 .719 2.212l-3.064 9.43a1.978 1.978 0 0 1 -1.881 1.367h-9.916a1.978 1.978 0 0 1 -1.881 -1.367l-3.064 -9.43a1.978 1.978 0 0 1 .719 -2.212l8.021 -5.828a1.978 1.978 0 0 1 2.326 0'},
+    {id:'quadrato', d:'M3 5a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14'},
+    {id:'ottagono', d:'M12.802 2.165l5.575 2.389c.48 .206 .863 .589 1.07 1.07l2.388 5.574c.22 .512 .22 1.092 0 1.604l-2.389 5.575c-.206 .48 -.589 .863 -1.07 1.07l-5.574 2.388c-.512 .22 -1.092 .22 -1.604 0l-5.575 -2.389a2.036 2.036 0 0 1 -1.07 -1.07l-2.388 -5.574a2.036 2.036 0 0 1 0 -1.604l2.389 -5.575c.206 -.48 .589 -.863 1.07 -1.07l5.574 -2.388a2.036 2.036 0 0 1 1.604 0'},
+    {id:'quadrato-tondo', d:'M12 3c7.2 0 9 1.8 9 9c0 7.2 -1.8 9 -9 9c-7.2 0 -9 -1.8 -9 -9c0 -7.2 1.8 -9 9 -9'},
+    {id:'cerchio-punto', d:'M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0', extra:'<path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>'},
+    {id:'forma', d:'M3 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0', extra:'<path d="M17 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M17 5a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M3 19a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"/><path d="M6.5 17.5l11 -11m-12.5 .5v10m14 -10v10"/>'},
+    {id:'rettangolo', d:'M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10'},
+    {id:'bersaglio', d:'M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0', extra:'<path d="M7 12a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"/><path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/>'},
+    {id:'mirino', d:'M4 8v-2a2 2 0 0 1 2 -2h2', extra:'<path d="M4 16v2a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M16 20h2a2 2 0 0 0 2 -2v-2"/><path d="M9 12l6 0"/><path d="M12 9l0 6"/>'}
+    ,{id:'ovale', extra:'<ellipse cx="12" cy="12" rx="9" ry="6"/>'}
+  ],
+  generico: [
+    {id:'fulmine', d:'M13 3l0 7l6 0l-8 11l0 -7l-6 0l8 -11'},
+    {id:'ancora', d:'M12 9v12m-8 -8a8 8 0 0 0 16 0m1 0h-2m-14 0h-2', extra:'<path d="M9 6a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/>'},
+    {id:'infinito', d:'M9.828 9.172a4 4 0 1 0 0 5.656a10 10 0 0 0 2.172 -2.828a10 10 0 0 1 2.172 -2.828a4 4 0 1 1 0 5.656a10 10 0 0 1 -2.172 -2.828a10 10 0 0 0 -2.172 -2.828'},
+    {id:'luna', d:'M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454l0 .008'},
+    {id:'chiave', d:'M16.555 3.843l3.602 3.602a2.877 2.877 0 0 1 0 4.069l-2.643 2.643a2.877 2.877 0 0 1 -4.069 0l-.301 -.301l-6.558 6.558a2 2 0 0 1 -1.239 .578l-.175 .008h-1.172a1 1 0 0 1 -.993 -.883l-.007 -.117v-1.172a2 2 0 0 1 .467 -1.284l.119 -.13l.414 -.414h2v-2h2v-2l2.144 -2.144l-.301 -.301a2.877 2.877 0 0 1 0 -4.069l2.643 -2.643a2.877 2.877 0 0 1 4.069 0', extra:'<path d="M15 9h.01"/>'},
+    {id:'lucchetto', d:'M5 13a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v6a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-6', extra:'<path d="M11 16a1 1 0 1 0 2 0a1 1 0 0 0 -2 0"/><path d="M8 11v-4a4 4 0 1 1 8 0v4"/>'},
+    {id:'piuma', d:'M4 20l10 -10m0 -5v5h5m-9 -1v5h5m-9 -1v5h5m-5 -5l4 -4l4 -4', extra:'<path d="M19 10c.638 -.636 1 -1.515 1 -2.486a3.515 3.515 0 0 0 -3.517 -3.514c-.97 0 -1.847 .367 -2.483 1m-3 13l4 -4l4 -4"/>'},
+    {id:'bandiera', d:'M5 5a5 5 0 0 1 7 0a5 5 0 0 0 7 0v9a5 5 0 0 1 -7 0a5 5 0 0 0 -7 0v-9', extra:'<path d="M5 21v-7"/>'},
+    {id:'scudo', d:'M12 3a12 12 0 0 0 8.5 3a12 12 0 0 1 -8.5 15a12 12 0 0 1 -8.5 -15a12 12 0 0 0 8.5 -3'},
+    {id:'bussola', d:'M8 16l2 -6l6 -2l-2 6l-6 2', extra:'<path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"/><path d="M12 3l0 2"/><path d="M12 19l0 2"/><path d="M3 12l2 0"/><path d="M19 12l2 0"/>'},
+    {id:'magnete', d:'M4 13v-8a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v8a2 2 0 0 0 6 0v-8a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v8a8 8 0 0 1 -16 0', extra:'<path d="M4 8l5 0"/><path d="M15 8l4 0"/>'},
+    {id:'puzzle', d:'M4 7h3a1 1 0 0 0 1 -1v-1a2 2 0 0 1 4 0v1a1 1 0 0 0 1 1h3a1 1 0 0 1 1 1v3a1 1 0 0 0 1 1h1a2 2 0 0 1 0 4h-1a1 1 0 0 0 -1 1v3a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-1a2 2 0 0 0 -4 0v1a1 1 0 0 1 -1 1h-3a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h1a2 2 0 0 0 0 -4h-1a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1'},
+    {id:'scintille', d:'M16 18a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m0 -12a2 2 0 0 1 2 2a2 2 0 0 1 2 -2a2 2 0 0 1 -2 -2a2 2 0 0 1 -2 2m-7 12a6 6 0 0 1 6 -6a6 6 0 0 1 -6 -6a6 6 0 0 1 -6 6a6 6 0 0 1 6 6'},
+    {id:'etichetta', d:'M6.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0', extra:'<path d="M3 6v5.172a2 2 0 0 0 .586 1.414l7.71 7.71a2.41 2.41 0 0 0 3.408 0l5.592 -5.592a2.41 2.41 0 0 0 0 -3.408l-7.71 -7.71a2 2 0 0 0 -1.414 -.586h-5.172a3 3 0 0 0 -3 3"/>'}
+  ],
+  arte: [
+    {id:'pennello', d:'M3 21v-4a4 4 0 1 1 4 4h-4', extra:'<path d="M21 3a16 16 0 0 0 -12.8 10.2"/><path d="M21 3a16 16 0 0 1 -10.2 12.8"/><path d="M10.6 9a9 9 0 0 1 4.4 4.4"/>'},
+    {id:'nota', d:'M3 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0', extra:'<path d="M13 17a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/><path d="M9 17v-13h10v13"/><path d="M9 8h10"/>'},
+    {id:'tavolozza', d:'M12 21a9 9 0 0 1 0 -18c4.97 0 9 3.582 9 8c0 1.06 -.474 2.078 -1.318 2.828c-.844 .75 -1.989 1.172 -3.182 1.172h-2.5a2 2 0 0 0 -1 3.75a1.3 1.3 0 0 1 -1 2.25', extra:'<path d="M7.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M11.5 7.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M15.5 10.5a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/>'},
+    {id:'maschera', d:'M9 12a3 3 0 1 0 6 0a3 3 0 1 0 -6 0', extra:'<path d="M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12"/>'},
+    {id:'matita', d:'M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4', extra:'<path d="M13.5 6.5l4 4"/>'},
+    {id:'fotocamera', d:'M5 7h1a2 2 0 0 0 2 -2a1 1 0 0 1 1 -1h6a1 1 0 0 1 1 1a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v9a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-9a2 2 0 0 1 2 -2', extra:'<path d="M9 13a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"/>'},
+    {id:'libro', d:'M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0', extra:'<path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0"/><path d="M3 6l0 13"/><path d="M12 6l0 13"/><path d="M21 6l0 13"/>'},
+    {id:'microfono', d:'M9 5a3 3 0 0 1 3 -3a3 3 0 0 1 3 3v5a3 3 0 0 1 -3 3a3 3 0 0 1 -3 -3l0 -5', extra:'<path d="M5 10a7 7 0 0 0 14 0"/><path d="M8 21l8 0"/><path d="M12 17l0 4"/>'},
+    {id:'cuffie', d:'M4 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3', extra:'<path d="M15 15a2 2 0 0 1 2 -2h1a2 2 0 0 1 2 2v3a2 2 0 0 1 -2 2h-1a2 2 0 0 1 -2 -2l0 -3"/><path d="M4 15v-3a8 8 0 0 1 16 0v3"/>'},
+    {id:'piano', d:'M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10', extra:'<path d="M9 19v-6"/><path d="M8 5v8h2v-8"/><path d="M15 19v-6"/><path d="M14 5v8h2v-8"/>'},
+    {id:'film', d:'M4 6a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2l0 -12', extra:'<path d="M8 4l0 16"/><path d="M16 4l0 16"/><path d="M4 8l4 0"/><path d="M4 16l4 0"/><path d="M4 12l16 0"/><path d="M16 8l4 0"/><path d="M16 16l4 0"/>'},
+    {id:'disco', d:'M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0', extra:'<path d="M11 12a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"/><path d="M7 12a5 5 0 0 1 5 -5"/><path d="M12 17a5 5 0 0 0 5 -5"/>'}
+    ,{id:'notedoppie', glyph:'♫'}
+  ],
+  matematica: [
+    {id:'pi', d:'M4 8h16M7 8l0 11M17 8l0 8a2 2 0 0 1 -2 2'},
+    {id:'sigma', d:'M18 4h-11l6 8l-6 8h11'},
+    {id:'delta', d:'M12 4l9 16h-18z'},
+    {id:'integrale', d:'M16 4c-2.5 0 -4 2 -4 5v6c0 3 -1.5 5 -4 5'},
+    {id:'piumeno', d:'M12 3v8M8 7h8M6 17h12'},
+        {id:'radice', d:'M13 12h1c1 0 1 1 2.016 3.527c.984 2.473 .984 3.473 1.984 3.473h1', extra:'<path d="M12 19c1.5 0 3 -2 4 -3.5s2.5 -3.5 4 -3.5"/><path d="M3 12h1l3 8l3 -16h10"/>'},
+        {id:'percento', d:'M12 3a9 9 0 1 1 -5.16 1.626l5.16 7.374v-9', extra:'<path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/>'},
+        {id:'funzione', d:'M3 19a2 2 0 0 0 2 2c2 0 2 -4 3 -9s1 -9 3 -9a2 2 0 0 1 2 2', extra:'<path d="M5 12h6"/><path d="M15 12l6 6"/><path d="M15 18l6 -6"/>'},
+        {id:'somma', d:'M18 16v2a1 1 0 0 1 -1 1h-11l6 -7l-6 -7h11a1 1 0 0 1 1 1v2'}
+  ]
+};
+const CAT_LABELS = {natura:'Natura', festivita:'Festività', animali:'Animali', forme:'Forme', generico:'Generico', arte:'Arte', matematica:'Matematica'};
+
+const FONTS = [
+  {id:'sans', label:'Sans tecnico', family:"'Inter', sans-serif", weight:600},
+  {id:'script', label:'Script elegante', family:"'Great Vibes', cursive", weight:400},
+  {id:'block', label:'Stencil militare', family:"'Big Shoulders Stencil', sans-serif", weight:700},
+  {id:'serif', label:'Serif classico', family:"'Playfair Display', serif", weight:700},
+  {id:'mono', label:'Tecnico mono', family:"'JetBrains Mono', monospace", weight:500},
+  {id:'hand', label:'Corsivo a mano', family:"'Caveat', cursive", weight:700},
+  {id:'cond', label:'Condensato bold', family:"'Oswald', sans-serif", weight:600},
+  {id:'round', label:'Arrotondato', family:"'Quicksand', sans-serif", weight:700},
+  {id:'monument', label:'Monumentale', family:"'Cinzel', serif", weight:600},
+  {id:'marker', label:'Pennarello', family:"'Permanent Marker', cursive", weight:400}
+];
+function fontById(id){ return FONTS.find(f=>f.id===id) || FONTS[0]; }
+
+function renderTag(){
+  const wrap = document.getElementById('tagWrap');
+  const placedEls = state.elements.filter(e=>e.placed);
+  let elsHTML = placedEls.map(el => elementSVG(el)).join('');
+  wrap.innerHTML = `
+  <svg viewBox="0 0 340 340" id="tagSvg">
+    <defs>
+      <linearGradient id="metalFill" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#efece5"/><stop offset="35%" stop-color="#c9c6bc"/>
+        <stop offset="55%" stop-color="#e4e1d8"/><stop offset="100%" stop-color="#a9a69c"/>
+      </linearGradient>
+      <pattern id="brushed" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(8)">
+        <rect width="4" height="4" fill="transparent"/>
+        <line x1="0" y1="0" x2="0" y2="4" stroke="#000" stroke-opacity="0.045" stroke-width="1"/>
+      </pattern>
+      <clipPath id="tagClip">${shapeClipContent()}</clipPath>
+    </defs>
+    ${shapeOutlineSVG()}
+    <g clip-path="url(#tagClip)">
+      <rect x="0" y="0" width="340" height="340" fill="url(#brushed)"/>
+      ${elsHTML}
+    </g>
+    ${state.hole ? `
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].ringY}" r="13" fill="none" stroke="#59564d" stroke-width="4"/>
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="7.5" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
+    ` : ''}
+  </svg>`;
+  attachDragHandlers();
+  document.getElementById('readoutShape').innerHTML = `FORMA <b>${SHAPES[state.shape].label.toUpperCase()}</b>`;
+}
+
+function elementSVG(el){
+  const sel = el.id===state.selectedId ? ' selected' : '';
+  const rot = el.rotation||0;
+  if(el.type==='icon'){
+    const icon = findIcon(el.iconId);
+    const sz = el.size;
+    const isFull = el.fill==='pieno';
+    const inner = icon.glyph
+      ? `<text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${sz}" fill="#221f1a" font-family="'Inter',sans-serif" font-weight="600">${icon.glyph}</text>`
+      : `<g transform="translate(${-sz/2},${-sz/2}) scale(${sz/24})" fill="none" stroke="#221f1a" stroke-width="${isFull?3.2:1.6}" stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</g>`;
+    const hw = sz/2+6, hh = sz/2+6;
+    return `<g class="drag-el${sel}" data-id="${el.id}" transform="translate(${el.x},${el.y}) rotate(${rot})">
+      <rect class="sel-box" x="${-hw}" y="${-hh}" width="${hw*2}" height="${hh*2}" fill="none" stroke="#ff5a2e" stroke-width="1.5" stroke-dasharray="3,3"/>
+      <line class="handle rotate-line" x1="0" y1="${-hh}" x2="0" y2="${-hh-16}"/>
+      <circle class="handle rotate-handle" data-role="rotate" cx="0" cy="${-hh-16}" r="6"/>
+      <rect class="handle resize-handle" data-role="resize" x="${hw-6}" y="${hh-6}" width="12" height="12"/>
+      ${inner}
+    </g>`;
+  }
+  const font = fontById(el.fontId);
+  const w = estimateTextWidth(el.content, el.size, font.id);
+  const isFull = el.fill!=='contorno';
+  const fillAttrs = isFull ? `fill="#221f1a"` : `fill="none" stroke="#221f1a" stroke-width="1"`;
+  const hw = w/2+8, hh = el.size/2+8;
+  return `<g class="drag-el${sel}" data-id="${el.id}" transform="translate(${el.x},${el.y}) rotate(${rot})">
+    <rect class="sel-box" x="${-hw}" y="${-hh}" width="${hw*2}" height="${hh*2}" fill="none" stroke="#ff5a2e" stroke-width="1.5" stroke-dasharray="3,3"/>
+    <line class="handle rotate-line" x1="0" y1="${-hh}" x2="0" y2="${-hh-16}"/>
+    <circle class="handle rotate-handle" data-role="rotate" cx="0" cy="${-hh-16}" r="6"/>
+    <rect class="handle resize-handle" data-role="resize" x="${hw-6}" y="${hh-6}" width="12" height="12"/>
+    <text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${escapeXML(el.content)}</text>
+  </g>`;
+}
+function estimateTextWidth(str, size, fontId){
+  const factor = (fontId==='script'||fontId==='hand'||fontId==='marker') ? 0.42 : (fontId==='mono'||fontId==='monument') ? 0.62 : 0.56;
+  return Math.max(20, str.length * size * factor);
+}
+function escapeXML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function findIcon(iconId){
+  for(const cat in ICONS){ const found = ICONS[cat].find(i=>i.id===iconId); if(found) return found; }
+  return {glyph:'?'};
+}
+
+function applyElementGeometry(g, el){
+  if(el.type==='icon'){
+    const icon = findIcon(el.iconId);
+    const sz = el.size;
+    const isFull = el.fill==='pieno';
+    if(icon.glyph){
+      const text = g.querySelector('text');
+      if(text) text.setAttribute('font-size', sz);
+    } else {
+      const innerG = g.querySelector('g');
+      if(innerG){
+        innerG.setAttribute('transform', `translate(${-sz/2},${-sz/2}) scale(${sz/24})`);
+        innerG.setAttribute('stroke-width', isFull?3.2:1.6);
+      }
+    }
+    updateBoxAndHandles(g, sz/2+6, sz/2+6);
+  } else {
+    const font = fontById(el.fontId);
+    const w = estimateTextWidth(el.content, el.size, font.id);
+    const text = g.querySelector('text');
+    if(text) text.setAttribute('font-size', el.size);
+    updateBoxAndHandles(g, w/2+8, el.size/2+8);
+  }
+}
+function updateBoxAndHandles(g, hw, hh){
+  const box = g.querySelector('.sel-box');
+  if(box){ box.setAttribute('x',-hw); box.setAttribute('y',-hh); box.setAttribute('width',hw*2); box.setAttribute('height',hh*2); }
+  const line = g.querySelector('.rotate-line');
+  if(line){ line.setAttribute('y1',-hh); line.setAttribute('y2', -hh-16); }
+  const rh = g.querySelector('.rotate-handle');
+  if(rh){ rh.setAttribute('cy', -hh-16); }
+  const sh = g.querySelector('.resize-handle');
+  if(sh){ sh.setAttribute('x', hw-6); sh.setAttribute('y', hh-6); }
+}
+
+let onTagDrag = null;
+function attachDragHandlers(){
+  const svg = document.getElementById('tagSvg');
+  if(!svg) return;
+  svg.querySelectorAll('.drag-el').forEach(g=>{
+    g.addEventListener('pointerdown', e=>{
+      if(e.target.closest('.handle')) return;
+      e.preventDefault();
+      state.selectedId = g.dataset.id;
+      svg.querySelectorAll('.drag-el').forEach(x=>x.classList.remove('selected'));
+      g.classList.add('selected');
+      const pt = svgPoint(svg, e);
+      const el = state.elements.find(x=>x.id===g.dataset.id);
+      onTagDrag = { id: el.id, offX: pt.x-el.x, offY: pt.y-el.y };
+      g.setPointerCapture(e.pointerId);
+    });
+  });
+  svg.querySelectorAll('.resize-handle').forEach(h=>{
+    h.addEventListener('pointerdown', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const g = h.closest('.drag-el');
+      const el = state.elements.find(x=>x.id===g.dataset.id);
+      const startSize = el.size;
+      const startPt = svgPoint(svg, e);
+      const startDist = Math.max(1, Math.hypot(startPt.x-el.x, startPt.y-el.y));
+      h.setPointerCapture(e.pointerId);
+      function onMove(ev){
+        const pt = svgPoint(svg, ev);
+        const dist = Math.hypot(pt.x-el.x, pt.y-el.y);
+        const scale = dist/startDist;
+        const min = el.type==='icon' ? 18 : 16;
+        el.size = Math.max(min, Math.min(90, Math.round(startSize*scale)));
+        applyElementGeometry(g, el);
+      }
+      function onUp(){
+        h.releasePointerCapture(e.pointerId);
+        h.removeEventListener('pointermove', onMove);
+        h.removeEventListener('pointerup', onUp);
+      }
+      h.addEventListener('pointermove', onMove);
+      h.addEventListener('pointerup', onUp);
+    });
+  });
+  svg.querySelectorAll('.rotate-handle').forEach(h=>{
+    h.addEventListener('pointerdown', e=>{
+      e.preventDefault(); e.stopPropagation();
+      const g = h.closest('.drag-el');
+      const el = state.elements.find(x=>x.id===g.dataset.id);
+      h.setPointerCapture(e.pointerId);
+      function onMove(ev){
+        const pt = svgPoint(svg, ev);
+        const angle = Math.atan2(pt.y-el.y, pt.x-el.x) * 180/Math.PI + 90;
+        el.rotation = Math.round(angle);
+        g.setAttribute('transform', `translate(${el.x},${el.y}) rotate(${el.rotation})`);
+      }
+      function onUp(){
+        h.releasePointerCapture(e.pointerId);
+        h.removeEventListener('pointermove', onMove);
+        h.removeEventListener('pointerup', onUp);
+      }
+      h.addEventListener('pointermove', onMove);
+      h.addEventListener('pointerup', onUp);
+    });
+  });
+  svg.addEventListener('pointermove', e=>{
+    if(!onTagDrag) return;
+    const pt = svgPoint(svg, e);
+    const el = state.elements.find(x=>x.id===onTagDrag.id);
+    if(!el) return;
+    el.x = Math.round(pt.x - onTagDrag.offX);
+    el.y = Math.round(pt.y - onTagDrag.offY);
+    const g = svg.querySelector(`[data-id="${el.id}"]`);
+    if(g) g.setAttribute('transform', `translate(${el.x},${el.y}) rotate(${el.rotation||0})`);
+  });
+  ['pointerup','pointerleave'].forEach(evt=>{
+    svg.addEventListener(evt, ()=>{ onTagDrag = null; });
+  });
+}
+function svgPoint(svg, evt){
+  const rect = svg.getBoundingClientRect();
+  const scaleX = 340/rect.width, scaleY = 340/rect.height;
+  return { x:(evt.clientX-rect.left)*scaleX, y:(evt.clientY-rect.top)*scaleY };
+}
+function selectElement(id){
+  state.selectedId = id;
+  renderTag();
+}
+
+function attachSatelliteDrag(previewEl, elId){
+  previewEl.addEventListener('pointerdown', e=>{
+    e.preventDefault();
+    const visual = previewEl.querySelector('.sat-preview-visual');
+    const rect = visual.getBoundingClientRect();
+    const clone = document.createElement('div');
+    clone.className = 'floating-clone';
+    clone.innerHTML = visual.innerHTML;
+    const size = Math.max(rect.width, rect.height, 40) + 20;
+    clone.style.width = size+'px';
+    clone.style.height = size+'px';
+    const centerX = rect.left + rect.width/2, centerY = rect.top + rect.height/2;
+    clone.style.left = (centerX - size/2)+'px';
+    clone.style.top = (centerY - size/2)+'px';
+    document.body.appendChild(clone);
+    const offX = e.clientX-(centerX-size/2), offY = e.clientY-(centerY-size/2);
+    previewEl.setPointerCapture(e.pointerId);
+    function onMove(ev){
+      clone.style.left = (ev.clientX-offX)+'px';
+      clone.style.top = (ev.clientY-offY)+'px';
+    }
+    function onUp(ev){
+      previewEl.releasePointerCapture(e.pointerId);
+      previewEl.removeEventListener('pointermove', onMove);
+      previewEl.removeEventListener('pointerup', onUp);
+      clone.remove();
+      const svg = document.getElementById('tagSvg');
+      const svgRect = svg.getBoundingClientRect();
+      const el = state.elements.find(x=>x.id===elId);
+      let justPlaced = false;
+      if(ev.clientX>=svgRect.left && ev.clientX<=svgRect.right && ev.clientY>=svgRect.top && ev.clientY<=svgRect.bottom){
+        const scaleX = 340/svgRect.width, scaleY = 340/svgRect.height;
+        el.x = Math.round((ev.clientX-svgRect.left)*scaleX);
+        el.y = Math.round((ev.clientY-svgRect.top)*scaleY);
+        justPlaced = !el.placed;
+        el.placed = true;
+      }
+      state.selectedId = elId;
+      renderTag();
+      renderOrbit();
+      if(justPlaced){
+        const g = document.querySelector(`#tagSvg [data-id="${elId}"]`);
+        if(g){ g.classList.add('just-placed'); setTimeout(()=>g.classList.remove('just-placed'), 650); }
+      }
+    }
+    previewEl.addEventListener('pointermove', onMove);
+    previewEl.addEventListener('pointerup', onUp);
+  });
+}
+
+function renderSteps(){
+  const el = document.getElementById('steps');
+  el.innerHTML = STEPS.map((s,i)=>{
+    const cls = i===state.step ? 'active' : (i<state.step ? 'done' : '');
+    return `<div class="step-pill ${cls}" data-i="${i}">${STEP_META[s].n}</div>`;
+  }).join('');
+  el.querySelectorAll('.step-pill').forEach(p=>{
+    p.addEventListener('click', ()=>{ state.step = parseInt(p.dataset.i); renderAll(); });
+  });
+}
+
+function renderHead(){
+  const step = STEPS[state.step];
+  document.getElementById('stepNum').textContent = STEP_META[step].n;
+  document.getElementById('stepTitle').textContent = STEP_META[step].title;
+  document.getElementById('stepSub').textContent = STEP_META[step].sub;
+}
+
+function renderControlBar(){
+  const step = STEPS[state.step];
+  const bar = document.getElementById('controlBar');
+  if(step==='forma'){ bar.innerHTML=''; return; }
+  if(step==='testo'){
+    bar.innerHTML = `<div class="text-input-row">
+      <input class="text-input" id="textInput" placeholder="Scrivi il testo, poi invio" maxlength="30">
+      <button class="text-input-btn" id="addTextBtn">Aggiungi</button>
+    </div>`;
+    const input = document.getElementById('textInput');
+    const btn = document.getElementById('addTextBtn');
+    const submit = ()=>{
+      const val = input.value.trim();
+      if(!val) return;
+      const id = 'el'+(state.nextId++);
+      state.elements.push({ id, type:'text', content:val, x:170, y:170, size:34, fontId:'sans', fill:'pieno', rotation:0, placed:false });
+      state.selectedId = id;
+      input.value='';
+      renderOrbit();
+    };
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+    return;
+  }
+  if(step==='icone'){
+    const tabs = Object.keys(CAT_LABELS).map(c=>`<div class="cat-tab ${state.activeCat===c?'active':''}" data-cat="${c}">${CAT_LABELS[c]}</div>`).join('');
+    const icons = ICONS[state.activeCat].map(ic=>`
+      <div class="icon-card" data-icon="${ic.id}">
+        ${ic.glyph ? `<span class="glyph">${ic.glyph}</span>` : `<svg viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ic.d?`<path d="${ic.d}"/>`:''}${ic.extra||''}</svg>`}
+      </div>`).join('');
+    bar.innerHTML = `<div style="width:100%;"><div class="cat-tabs">${tabs}</div><div class="icon-grid">${icons}</div></div>`;
+    bar.querySelectorAll('.cat-tab').forEach(t=>{
+      t.addEventListener('click', ()=>{ state.activeCat = t.dataset.cat; renderControlBar(); });
+    });
+    bar.querySelectorAll('.icon-card').forEach(card=>{
+      card.addEventListener('click', ()=>{
+        const id = 'el'+(state.nextId++);
+        state.elements.push({ id, type:'icon', iconId:card.dataset.icon, x:170, y:170, size:44, fill:'linea', rotation:0, placed:false });
+        state.selectedId = id;
+        renderOrbit();
+      });
+    });
+  }
+}
+
+function renderOrbit(){
+  const orbit = document.getElementById('orbitWrap');
+  orbit.querySelectorAll('.orbit-item').forEach(n=>n.remove());
+  const step = STEPS[state.step];
+  if(step==='forma'){
+    Object.keys(SHAPES).forEach(k=>{
+      const pos = SHAPE_ORBIT_POS[k];
+      const item = document.createElement('div');
+      item.className = 'orbit-item';
+      Object.assign(item.style, pos);
+      item.innerHTML = `<div class="shape-card ${state.shape===k?'active':''}" data-shape="${k}">${shapePreviewSVG(k)}<div class="name">${SHAPES[k].label}</div></div>`;
+      orbit.appendChild(item);
+      item.querySelector('.shape-card').addEventListener('click', ()=>{ state.shape=k; renderAll(); });
+    });
+  } else {
+    const relevant = state.elements.filter(e=> step==='testo' ? e.type==='text' : true);
+    const W = orbit.clientWidth || 760;
+    relevant.forEach((el,i)=>{
+      const item = document.createElement('div');
+      item.className = 'orbit-item';
+      if(i===0){
+        item.style.left = '50%'; item.style.top = '1%'; item.style.transform = 'translateX(-50%)';
+      } else {
+        const isRight = (i % 2 === 1);
+        const slot = Math.floor((i-1)/2);
+        if(isRight){ item.style.right = '0%'; } else { item.style.left = '0%'; }
+        item.style.top = (8 + slot*27) + '%';
+      }
+      item.innerHTML = satelliteHTML(el);
+      orbit.appendChild(item);
+      bindSatelliteEvents(item, el);
+    });
+  }
+  renderTag();
+}
+
+function satelliteHTML(el){
+  const unplacedCls = el.placed ? '' : ' unplaced';
+  if(el.type==='icon'){
+    const icon = findIcon(el.iconId);
+    const isFull = el.fill==='pieno';
+    const svg = icon.glyph ? `<span class="glyph">${icon.glyph}</span>` : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${isFull?3.2:1.6}" stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</svg>`;
+    return `<div class="satellite${unplacedCls}" data-id="${el.id}">
+      <div class="sat-preview-drag" data-role="drag">
+        <div class="sat-preview-visual sat-preview-icon">${svg}</div>
+        <div class="sat-drag-label">${el.placed?'trascina per spostare':'trascina sulla tag'}</div>
+      </div>
+      <div class="sat-controls">
+        <div class="sat-fill-toggle">
+          <button data-fill="linea" class="${!isFull?'active':''}">Linea</button>
+          <button data-fill="pieno" class="${isFull?'active':''}">Pieno</button>
+        </div>
+        <div class="sat-row">
+          <div class="sat-size"><button data-act="dec">−</button><span>${el.size}</span><button data-act="inc">+</button></div>
+          <span class="sat-del">elimina</span>
+        </div>
+      </div>
+    </div>`;
+  }
+  const font = fontById(el.fontId);
+  const isFull = el.fill!=='contorno';
+  const opts = FONTS.map(f=>`<option value="${f.id}" ${f.id===el.fontId?'selected':''}>${f.label}</option>`).join('');
+  return `<div class="satellite${unplacedCls}" data-id="${el.id}">
+    <div class="sat-preview-drag" data-role="drag">
+      <div class="sat-preview-visual"><span class="sat-preview-text" style="font-family:${font.family}; font-weight:${font.weight}; ${isFull?'':'color:transparent; -webkit-text-stroke:1px var(--text-1);'}">${escapeHTML(el.content)}</span></div>
+      <div class="sat-drag-label">${el.placed?'trascina per spostare':'trascina sulla tag'}</div>
+    </div>
+    <div class="sat-controls">
+      <input class="sat-text-input" value="${escapeHTML(el.content)}" maxlength="30">
+      <select class="sat-select">${opts}</select>
+      <div class="sat-fill-toggle">
+        <button data-fill="contorno" class="${!isFull?'active':''}">Contorno</button>
+        <button data-fill="pieno" class="${isFull?'active':''}">Pieno</button>
+      </div>
+      <div class="sat-row">
+        <div class="sat-size"><button data-act="dec">−</button><span>${el.size}</span><button data-act="inc">+</button></div>
+        <span class="sat-del">elimina</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function bindSatelliteEvents(item, el){
+  const drag = item.querySelector('.sat-preview-drag');
+  attachSatelliteDrag(drag, el.id);
+  const sel = item.querySelector('.sat-select');
+  if(sel) sel.addEventListener('change', ()=>{ el.fontId = sel.value; renderOrbit(); });
+  const txt = item.querySelector('.sat-text-input');
+  if(txt) txt.addEventListener('input', ()=>{ el.content = txt.value || ' '; renderTag(); refreshPreviewOnly(item, el); });
+  item.querySelectorAll('.sat-fill-toggle button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{ el.fill = btn.dataset.fill; renderOrbit(); });
+  });
+  item.querySelectorAll('.sat-size button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const delta = btn.dataset.act==='inc' ? 4 : -4;
+      const min = el.type==='icon' ? 18 : 16;
+      el.size = Math.max(min, Math.min(90, el.size+delta));
+      renderOrbit();
+    });
+  });
+  item.querySelector('.sat-del').addEventListener('click', ()=>{
+    state.elements = state.elements.filter(x=>x.id!==el.id);
+    if(state.selectedId===el.id) state.selectedId=null;
+    renderOrbit();
+  });
+}
+function refreshPreviewOnly(item, el){
+  const p = item.querySelector('.sat-preview-text');
+  if(p) p.textContent = el.content;
+}
+
+function escapeHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function renderHoleToggle(){
+  const wrap = document.getElementById('holeToggleWrap');
+  if(STEPS[state.step]!=='forma'){ wrap.innerHTML=''; return; }
+  wrap.innerHTML = `<div class="hole-toggle">Foro per anellino
+    <div class="switch ${state.hole?'on':''}" id="holeSwitch"><div class="knob"></div></div>
+  </div>`;
+  document.getElementById('holeSwitch').addEventListener('click', ()=>{ state.hole=!state.hole; renderAll(); });
+}
+
+function renderNav(){
+  const row = document.getElementById('navRow');
+  const isFirst = state.step===0;
+  const isLast = state.step===STEPS.length-1;
+  row.innerHTML = `
+    <button class="btn" id="navBack" ${isFirst?'disabled':''}>Indietro</button>
+    <button class="btn btn-primary" id="navNext" ${isLast?'disabled':''}>${isLast?'Configurazione completata':'Avanti'}</button>
+  `;
+  document.getElementById('navBack').addEventListener('click', ()=>{ state.step=Math.max(0,state.step-1); renderAll(); });
+  const nb = document.getElementById('navNext');
+  if(!isLast) nb.addEventListener('click', ()=>{ state.step=Math.min(STEPS.length-1,state.step+1); renderAll(); });
+}
+
+function renderAll(){
+  renderSteps();
+  renderHead();
+  renderControlBar();
+  renderHoleToggle();
+  renderOrbit();
+  renderNav();
+}
+renderAll();
+</script>
+</body>
+</html>
