@@ -41,9 +41,10 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .step-title{ font-family:var(--font-display); font-size:34px; font-weight:600; margin:0 0 8px; letter-spacing:0.01em; }
 .step-sub{ font-size:14px; color:var(--text-2); margin:0 auto; max-width:440px; line-height:1.5; }
 
+.step-scroll{ display:contents; }
 .control-bar{ display:flex; justify-content:center; margin:22px 0 6px; }
 .text-input-row{ display:flex; gap:0; width:100%; max-width:380px; }
-.text-input{ flex:1; background:var(--panel-2); border:1px solid var(--line); border-right:none; color:var(--text-1); font-family:var(--font-body); font-size:15px; padding:12px 14px; border-radius:2px 0 0 2px; resize:none; overflow:hidden; line-height:1.3; max-height:140px; }
+.text-input{ flex:1; background:var(--panel-2); border:1px solid var(--line); border-right:none; color:var(--text-1); font-family:var(--font-body); font-size:16px; padding:12px 14px; border-radius:2px 0 0 2px; resize:none; overflow:hidden; line-height:1.3; max-height:140px; }
 .text-input:focus{ outline:none; border-color:var(--ember); }
 .text-input-btn{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.04em; padding:0 18px; background:var(--ember); border:1px solid var(--ember); color:#1a0d06; cursor:pointer; border-radius:0 2px 2px 0; font-weight:500; }
 .grid-toggle-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:26px; padding-top:16px; border-top:1px solid var(--line); font-size:12px; color:var(--text-2); font-family:var(--font-mono); text-transform:uppercase; letter-spacing:0.04em; }
@@ -105,6 +106,15 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .completion-sub{ font-size:14px; color:var(--text-2); margin:0 0 30px; }
 .completion-actions{ display:flex; gap:10px; }
 
+.order-form{ display:flex; flex-direction:column; gap:10px; width:100%; max-width:380px; margin:0 0 22px; text-align:left; }
+.order-form label{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:0.04em; text-transform:uppercase; color:var(--text-2); margin-bottom:4px; display:block; }
+.order-form input{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:15px; padding:11px 13px; border-radius:2px; box-sizing:border-box; }
+.order-form input:focus{ outline:none; border-color:var(--ember); }
+.order-status{ font-size:13px; margin-top:4px; min-height:18px; }
+.order-status.error{ color:#ff6b5a; }
+.order-status.success{ color:#7fd88f; }
+.order-divider{ width:100%; max-width:380px; border:none; border-top:1px solid var(--line); margin:4px 0 20px; }
+
 .hole-toggle{ display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--text-2); background:var(--panel); border:1px solid var(--line); padding:8px 14px; border-radius:20px; }
 .switch{ width:34px; height:19px; background:var(--panel-2); border:1px solid var(--line); border-radius:12px; position:relative; cursor:pointer; flex-shrink:0; }
 .switch.on{ background:var(--ember-dim); border-color:var(--ember); }
@@ -135,7 +145,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .sat-preview-icon .glyph{ font-size:20px; color:var(--text-1); }
 .sat-drag-label{ font-family:var(--font-mono); font-size:8.5px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-3); }
 .sat-controls{ padding:9px 10px 10px; }
-.sat-text-input{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:12px; padding:6px 7px; border-radius:2px; margin-bottom:7px; resize:vertical; min-height:32px; line-height:1.3; }
+.sat-text-input{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:16px; padding:6px 7px; border-radius:2px; margin-bottom:7px; resize:vertical; min-height:32px; line-height:1.3; }
 .sat-select{ width:100%; background:var(--panel-2); border:1px solid var(--line); color:var(--text-1); font-family:var(--font-body); font-size:11px; padding:6px 6px; border-radius:2px; margin-bottom:7px; }
 .sat-fill-toggle{ display:flex; border:1px solid var(--line); border-radius:2px; overflow:hidden; margin-bottom:7px; }
 .sat-fill-toggle button{ flex:1; background:var(--panel-2); border:none; color:var(--text-3); font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; padding:6px 2px; cursor:pointer; }
@@ -188,28 +198,53 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 
 /* --- Layout mobile: telefono in orizzontale (touch screen, larghezza limitata) --- */
 @media (pointer:coarse) and (max-width:980px){
-  .app{ padding:8px 12px 20px; }
-  .topbar{ padding-bottom:8px; margin-bottom:2px; flex-wrap:wrap; gap:6px; }
+  html, body{ height:100%; }
+  .app{
+    padding:6px 12px 8px;
+    height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .topbar{ flex:0 0 auto; padding-bottom:6px; margin-bottom:2px; flex-wrap:wrap; gap:6px; }
   .topbar-right{ gap:12px; overflow-x:auto; max-width:100%; padding-bottom:2px; }
   .topbar-right::-webkit-scrollbar{ height:4px; }
   .new-project-link, .save-indicator, .project-select{ flex-shrink:0; }
-  .step-head{ padding:8px 0 2px; }
-  .step-title{ font-size:20px; margin:0 0 4px; }
-  .step-sub{ font-size:12px; max-width:320px; line-height:1.35; }
-  .control-bar{ margin:8px 0 4px; }
-  .icon-grid{ grid-template-columns:repeat(8,1fr); max-width:none; max-height:110px; }
-  .shape-row{ gap:8px; }
-  .shape-card-row{ width:88px; padding:10px 10px 8px; }
+
+  /* stepView diventa un contenitore flex verticale: step-head e nav-row restano
+     sempre visibili (fissi), solo la parte centrale (control-bar + orbit-wrap)
+     scorre — evita che il titolo venga tagliato in alto o i pulsanti Avanti/Indietro
+     restino irraggiungibili in basso quando il contenuto dello step è alto (es. Icone). */
+  #stepView{ flex:1 1 auto; min-height:0; display:flex; flex-direction:column; }
+  .step-head{ flex:0 0 auto; padding:4px 0 0; }
+  .step-title{ font-size:19px; margin:0 0 2px; }
+  .step-sub{ font-size:11.5px; max-width:320px; line-height:1.3; }
+  .bounds-warning{ flex:0 0 auto; }
+  .step-scroll{
+    display:flex; flex-direction:column; flex:1 1 auto; min-height:0;
+    overflow-y:auto; -webkit-overflow-scrolling:touch;
+  }
+  .control-bar{ flex:0 0 auto; margin:6px 0 4px; }
+
+  /* Griglia icone: larghezza limitata così le celle hanno una dimensione prevedibile,
+     e max-height allineata a un multiplo esatto di (cella+gap) — prima la seconda riga
+     veniva tagliata a metà e mostrava caselle vuote senza il glifo dentro. */
+  .cat-tabs{ margin:0 auto 6px; }
+  .icon-grid{ grid-template-columns:repeat(8,1fr); max-width:480px; max-height:56px; }
+
+  /* Card forma più grandi su mobile invece che rimpicciolite: in orizzontale c'è
+     molta larghezza libera, prima veniva sprecata. */
+  .shape-row{ gap:16px; }
+  .shape-card-row{ width:120px; padding:11px 14px 8px; }
+  .shape-card-row svg{ width:38px; height:38px; }
 
   .orbit-wrap{
-    height:auto; max-width:none; margin-top:4px;
+    height:auto; max-width:none; margin-top:2px; flex:0 0 auto;
     display:flex; flex-direction:row; align-items:flex-start; gap:14px;
   }
   .orbit-wrap::before, .orbit-wrap::after{ display:none; }
   .tag-center{
-    position:static; transform:none; width:auto; flex:0 0 auto; gap:8px;
+    position:static; transform:none; width:auto; flex:0 0 auto; gap:5px;
   }
-  .tag-wrap{ width:min(38vh,40vw,240px); height:min(38vh,40vw,240px); }
+  .tag-wrap{ width:min(34vh,40vw,240px); height:min(34vh,40vw,240px); }
   .stage-readout{ display:none; }
   #orbitItemsList{
     position:static; flex:1 1 auto; display:flex; flex-direction:column; gap:8px;
@@ -218,7 +253,31 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
   .orbit-item{ position:static !important; width:100% !important; }
 
   .sat-size button{ width:32px; height:32px; font-size:15px; }
-  .nav-row{ margin-top:10px; flex-wrap:wrap; }
+  .nav-row{ flex:0 0 auto; margin-top:6px; flex-wrap:wrap; }
+
+  /* completion-view è un fratello di stepView, quindi non era coperto dal
+     flex-column + overflow:hidden di .app impostato sopra: senza queste regole
+     restava tagliata e irraggiungibile oltre la prima schermata su mobile. */
+  .completion-view{
+    flex:1 1 auto; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    padding:16px 16px 20px;
+  }
+  .completion-tag{ width:min(50vh,55vw,260px); height:min(50vh,55vw,260px); margin-bottom:14px; }
+  .completion-title{ font-size:22px; margin:0 0 12px; }
+
+  /* Handle di rotazione/ridimensionamento: sul canvas ridotto del mobile erano
+     visivamente ~5px, sotto qualunque soglia usabile col dito. Li ingrandisco via
+     transform (ancorato al proprio centro/angolo) per non dover toccare la logica
+     JS di posizionamento. Restano più piccoli dell'ideale (44px) per via dello
+     spazio fisico limitato, ma decisamente più prendibili di prima. */
+  .rotate-handle{
+    transform-box:fill-box; transform-origin:center;
+    transform:scale(2.6);
+  }
+  .resize-handle{
+    transform-box:fill-box; transform-origin:0% 0%;
+    transform:scale(2.2);
+  }
 }
 </style>
 </head>
@@ -255,6 +314,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
     <p class="step-sub" id="stepSub"></p>
   </div>
   <div class="bounds-warning" id="boundsWarning"></div>
+  <div class="step-scroll" id="stepScroll">
   <div class="control-bar" id="controlBar"></div>
   <div class="orbit-wrap" id="orbitWrap">
     <div class="tag-center" id="tagCenter">
@@ -267,14 +327,34 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
     </div>
     <div id="orbitItemsList"></div>
   </div>
+  </div>
   <div class="nav-row" id="navRow"></div>
   </div>
   <div id="completionView" class="completion-view">
     <div class="completion-tag" id="completionTag"></div>
     <h2 class="completion-title">Ecco la tua tag.</h2>
+    <div class="order-form">
+      <div>
+        <label for="orderName">Nome e cognome *</label>
+        <input type="text" id="orderName" placeholder="Come ti chiami" autocomplete="name">
+      </div>
+      <div>
+        <label for="orderContact">Telefono o email *</label>
+        <input type="text" id="orderContact" placeholder="Dove possiamo ricontattarti" autocomplete="tel">
+      </div>
+      <div>
+        <label for="orderNote">Nota (gruppo, occasione…)</label>
+        <input type="text" id="orderNote" placeholder="Facoltativo — es. nome del gruppo">
+      </div>
+      <div class="order-status" id="orderStatus"></div>
+    </div>
     <div class="completion-actions">
       <button class="btn" id="backToEditBtn">Modifica ancora</button>
-      <button class="btn btn-primary" id="completionExportBtn">Esporta SVG</button>
+      <button class="btn btn-primary" id="sendOrderBtn">Invia la tua tag</button>
+    </div>
+    <hr class="order-divider">
+    <div class="completion-actions">
+      <button class="btn" id="completionExportBtn">Esporta SVG (per te)</button>
     </div>
   </div>
 </div>
@@ -432,7 +512,7 @@ function checkElementBounds(el){
     const hh = SHAPE_HOLE[state.shape];
     const dist = Math.hypot(el.x-hh.x, el.y-hh.holeY);
     const elRadius = Math.max(...corners.map(([px,py])=>Math.hypot(px-el.x,py-el.y)));
-    hitsHole = dist < (13 + elRadius*0.4);
+    hitsHole = dist < (14 + elRadius*0.4);
   }
   return { outOfBounds: !allInside, hitsHole };
 }
@@ -614,7 +694,7 @@ const ICONS = {
     {id:'feather', d:'M4 20l10 -10m0 -5v5h5m-9 -1v5h5m-9 -1v5h5m-5 -5l4 -4l4 -4', extra:'<path d="M19 10c.638 -.636 1 -1.515 1 -2.486a3.515 3.515 0 0 0 -3.517 -3.514c-.97 0 -1.847 .367 -2.483 1m-3 13l4 -4l4 -4"/>'},
     {id:'cricket', d:'M8 3l3 4', extra:'<path d="M16 3l-3 4"/><path d="M12 10a4 4 0 0 1 4 4v3a4 4 0 1 1 -8 0v-3a4 4 0 0 1 4 -4z"/><path d="M8 15h-3"/><path d="M8 18l-3 2"/><path d="M16 15h3"/><path d="M16 18l3 2"/><path d="M12 10v-2"/>'},
     {id:'dog-bowl', extra:'<path d="M4 12h16a1 1 0 0 1 1 1a5 7 0 0 1 -5 7h-8a5 7 0 0 1 -5 -7a1 1 0 0 1 1 -1z"/><path d="M8 12a4 4 0 0 1 8 0"/>'},
-    {id:'fish-christianity', extra:'<path d="M3 12c4.5 -6 13.5 -6 18 0c-4.5 6 -13.5 6 -18 0z"/>'},
+    {id:'fish-christianity', d:'M22 7s-5.646 10 -12.308 10c-3.226 .025 -6.194 -1.905 -7.692 -5c1.498 -3.095 4.466 -5.025 7.692 -5c6.662 0 12.308 10 12.308 10'},
     {id:'horse-toy', d:'M12 9m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0', extra:'<path d="M12 12v6"/><path d="M9 18h6"/><path d="M9 6l-2 -2M15 6l2 -2"/>'},
   ],
   forme: [
@@ -922,13 +1002,45 @@ const FONT_FILE_URLS = {
   gothic2: 'https://fonts.gstatic.com/s/medievalsharp/v28/EvOJzAlL3oU5AQl2mP5KdgptAq8.ttf'
 };
 const fontFileCache = {};
+const fontFilePending = {};
 async function loadRealFont(fontId){
   if(fontFileCache[fontId]) return fontFileCache[fontId];
+  if(fontFilePending[fontId]) return fontFilePending[fontId];
   const url = FONT_FILE_URLS[fontId];
-  const buf = await fetch(url).then(r=>r.arrayBuffer());
-  const font = opentype.parse(buf);
-  fontFileCache[fontId] = font;
-  return font;
+  fontFilePending[fontId] = fetch(url).then(r=>r.arrayBuffer()).then(buf=>{
+    const font = opentype.parse(buf);
+    fontFileCache[fontId] = font;
+    delete fontFilePending[fontId];
+    return font;
+  }).catch(err=>{
+    delete fontFilePending[fontId];
+    throw err;
+  });
+  return fontFilePending[fontId];
+}
+// Larghezza reale di una stringa nel font vero (solo avanzamento, no path) — usata per
+// misurare i bounding box in editing, non solo in export. Stessa logica di kerning di
+// getTextPathSafe qui sotto, ma senza costruire i contorni: serve solo un numero.
+function getRealTextWidth(font, text, fontSize){
+  const scale = 1 / font.unitsPerEm * fontSize;
+  const glyphs = Array.from(text).map(ch => font.charToGlyph(ch));
+  let width = 0;
+  for(let i=0;i<glyphs.length;i++){
+    width += glyphs[i].advanceWidth * scale;
+    if(i < glyphs.length-1){
+      try{ width += font.getKerningValue(glyphs[i], glyphs[i+1]) * scale; } catch(e){}
+    }
+  }
+  return width;
+}
+// Un font TTF viene scaricato al massimo una volta, poi resta in cache per tutta la
+// sessione. Finché non è pronto, estimateTextWidth usa il fallback euristico qui sotto;
+// non appena il font arriva, ridisegna la tag con le misure vere.
+const fontLoadNotified = new Set();
+function ensureFontLoaded(fontId){
+  if(fontFileCache[fontId] || fontLoadNotified.has(fontId)) return;
+  fontLoadNotified.add(fontId);
+  loadRealFont(fontId).then(()=>{ renderTag(); }).catch(()=>{ fontLoadNotified.delete(fontId); });
 }
 // Alcuni font (Inter, Great Vibes, Oswald, Bangers, e potenzialmente altri) contengono
 // tabelle GSUB con sostituzioni contestuali che opentype.js non supporta (lookupType 6,
@@ -983,8 +1095,8 @@ function renderTag(){
       ${gridOverlay}
     </g>
     ${state.hole ? `
-      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].ringY}" r="13" fill="none" stroke="#59564d" stroke-width="4"/>
-      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="7.5" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].ringY}" r="14" fill="none" stroke="#59564d" stroke-width="4"/>
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="8.4" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
     ` : ''}
   </svg>`;
   wrap.style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.zoom})`;
@@ -1049,6 +1161,13 @@ function elementSVG(el, interactive=true){
   </g>`;
 }
 function estimateTextWidth(str, size, fontId){
+  const realFont = fontFileCache[fontId];
+  if(realFont){
+    try{ return Math.max(20, getRealTextWidth(realFont, str, size)); }
+    catch(e){ /* glifo non mappabile o simile: cade sul fallback sotto */ }
+  } else {
+    ensureFontLoaded(fontId);
+  }
   const factor = (fontId==='script'||fontId==='hand'||fontId==='marker') ? 0.42 : (fontId==='mono'||fontId==='monument') ? 0.62 : 0.56;
   return Math.max(20, str.length * size * factor);
 }
@@ -1109,6 +1228,16 @@ function updateBoxAndHandles(g, hw, hh){
   if(sh){ sh.setAttribute('x', hw-6); sh.setAttribute('y', hh-6); }
 }
 
+function safeCapture(el, pointerId){
+  // setPointerCapture può lanciare eccezione in edge case di multi-touch (soprattutto
+  // durante il pinch, quando due pointerId vengono catturati quasi in contemporanea).
+  // Se non la intercettiamo, l'eccezione interrompe il resto della callback che la
+  // contiene — incluso l'aggiornamento di stato che di solito viene subito dopo.
+  try{ el.setPointerCapture(pointerId); }catch(err){ /* pointer non più attivo: ignora */ }
+}
+function safeRelease(el, pointerId){
+  try{ el.releasePointerCapture(pointerId); }catch(err){ /* pointer già rilasciato: ignora */ }
+}
 let onTagDrag = null;
 function attachDragHandlers(){
   const svg = document.getElementById('tagSvg');
@@ -1123,7 +1252,7 @@ function attachDragHandlers(){
       const pt = svgPoint(svg, e);
       const el = state.elements.find(x=>x.id===g.dataset.id);
       onTagDrag = { id: el.id, offX: pt.x-el.x, offY: pt.y-el.y };
-      g.setPointerCapture(e.pointerId);
+      safeCapture(g, e.pointerId);
     });
   });
   svg.querySelectorAll('.resize-handle').forEach(h=>{
@@ -1134,7 +1263,7 @@ function attachDragHandlers(){
       const startSize = el.size;
       const startPt = svgPoint(svg, e);
       const startDist = Math.max(1, Math.hypot(startPt.x-el.x, startPt.y-el.y));
-      h.setPointerCapture(e.pointerId);
+      safeCapture(h, e.pointerId);
       function onMove(ev){
         const pt = svgPoint(svg, ev);
         const dist = Math.hypot(pt.x-el.x, pt.y-el.y);
@@ -1144,7 +1273,7 @@ function attachDragHandlers(){
         applyElementGeometry(g, el);
       }
       function onUp(){
-        h.releasePointerCapture(e.pointerId);
+        safeRelease(h, e.pointerId);
         h.removeEventListener('pointermove', onMove);
         h.removeEventListener('pointerup', onUp);
         pushHistory(); saveProject();
@@ -1158,7 +1287,7 @@ function attachDragHandlers(){
       e.preventDefault(); e.stopPropagation();
       const g = h.closest('.drag-el');
       const el = state.elements.find(x=>x.id===g.dataset.id);
-      h.setPointerCapture(e.pointerId);
+      safeCapture(h, e.pointerId);
       function onMove(ev){
         const pt = svgPoint(svg, ev);
         const angle = Math.atan2(pt.y-el.y, pt.x-el.x) * 180/Math.PI + 90;
@@ -1166,7 +1295,7 @@ function attachDragHandlers(){
         g.setAttribute('transform', `translate(${el.x},${el.y}) rotate(${el.rotation})`);
       }
       function onUp(){
-        h.releasePointerCapture(e.pointerId);
+        safeRelease(h, e.pointerId);
         h.removeEventListener('pointermove', onMove);
         h.removeEventListener('pointerup', onUp);
         pushHistory(); saveProject();
@@ -1190,21 +1319,61 @@ function attachDragHandlers(){
   });
 
   let panState = null;
+  // Tracciamento multi-touch per il pinch-to-zoom: lo zoom prima era agganciato solo
+  // all'evento 'wheel' (rotellina mouse), quindi su schermo touch era irraggiungibile.
+  const activePointers = new Map(); // pointerId -> {x,y}
+  let pinchState = null; // {startDist, startZoom}
+  function pinchDistance(){
+    const pts = Array.from(activePointers.values());
+    if(pts.length<2) return 0;
+    return Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y);
+  }
   svg.addEventListener('pointerdown', e=>{
     if(e.target.closest('.drag-el') || e.target.closest('.handle')) return;
     e.preventDefault();
-    panState = { startX:e.clientX, startY:e.clientY, panX:state.panX, panY:state.panY };
-    svg.classList.add('panning');
-    svg.setPointerCapture(e.pointerId);
+    activePointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    safeCapture(svg, e.pointerId);
+    if(activePointers.size>=2){
+      panState = null;
+      svg.classList.remove('panning');
+      pinchState = { startDist: pinchDistance(), startZoom: state.zoom };
+    } else {
+      panState = { startX:e.clientX, startY:e.clientY, panX:state.panX, panY:state.panY };
+      svg.classList.add('panning');
+    }
   });
   svg.addEventListener('pointermove', e=>{
+    if(activePointers.has(e.pointerId)) activePointers.set(e.pointerId, { x:e.clientX, y:e.clientY });
+    if(pinchState && activePointers.size>=2){
+      const dist = pinchDistance();
+      if(pinchState.startDist>0){
+        const scale = dist/pinchState.startDist;
+        state.zoom = Math.max(0.5, Math.min(3, pinchState.startZoom*scale));
+        document.getElementById('tagWrap').style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.zoom})`;
+      }
+      return;
+    }
     if(!panState) return;
     state.panX = panState.panX + (e.clientX - panState.startX);
     state.panY = panState.panY + (e.clientY - panState.startY);
     document.getElementById('tagWrap').style.transform = `translate(${state.panX}px,${state.panY}px) scale(${state.zoom})`;
   });
-  ['pointerup','pointerleave'].forEach(evt=>{
-    svg.addEventListener(evt, ()=>{ panState=null; svg.classList.remove('panning'); });
+  ['pointerup','pointerleave','pointercancel'].forEach(evt=>{
+    svg.addEventListener(evt, e=>{
+      activePointers.delete(e.pointerId);
+      panState = null;
+      svg.classList.remove('panning');
+      if(activePointers.size>=2){
+        pinchState = { startDist: pinchDistance(), startZoom: state.zoom };
+      } else if(activePointers.size===1){
+        pinchState = null;
+        const [[,pos]] = Array.from(activePointers.entries());
+        panState = { startX:pos.x, startY:pos.y, panX:state.panX, panY:state.panY };
+        svg.classList.add('panning');
+      } else {
+        pinchState = null;
+      }
+    });
   });
   svg.addEventListener('wheel', e=>{
     e.preventDefault();
@@ -1239,13 +1408,13 @@ function attachSatelliteDrag(previewEl, elId){
     clone.style.top = (centerY - size/2)+'px';
     document.body.appendChild(clone);
     const offX = e.clientX-(centerX-size/2), offY = e.clientY-(centerY-size/2);
-    previewEl.setPointerCapture(e.pointerId);
+    safeCapture(previewEl, e.pointerId);
     function onMove(ev){
       clone.style.left = (ev.clientX-offX)+'px';
       clone.style.top = (ev.clientY-offY)+'px';
     }
     function onUp(ev){
-      previewEl.releasePointerCapture(e.pointerId);
+      safeRelease(previewEl, e.pointerId);
       previewEl.removeEventListener('pointermove', onMove);
       previewEl.removeEventListener('pointerup', onUp);
       clone.remove();
@@ -1589,6 +1758,7 @@ function renderAll(){
 }
 
 function renderCompletionView(){
+  resetOrderForm(false);
   const holder = document.getElementById('completionTag');
   const placedEls = state.elements.filter(e=>e.placed);
   const elsHTML = placedEls.map(el => elementSVG(el, false)).join('');
@@ -1627,8 +1797,8 @@ function renderCompletionView(){
       <g filter="url(#engraveDepth)">${elsHTML}</g>
     </g>
     ${state.hole ? `
-      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].ringY}" r="13" fill="none" stroke="#59564d" stroke-width="4"/>
-      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="7.5" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].ringY}" r="14" fill="none" stroke="#59564d" stroke-width="4"/>
+      <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="8.4" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
     ` : ''}
   </svg>`;
 }
@@ -1799,7 +1969,7 @@ function loadProject(){
   }
 }
 
-const MM_SCALE = 40/280;
+const MM_SCALE = 25/280; // diametro reale tag rotonda: 25mm (era 40mm) — vedi nota ordine Amazon B0DZXB4WWS
 const ENGRAVE_LINE_MM = 0.05;
 const ENGRAVE_LINE_INTERNAL = ENGRAVE_LINE_MM / MM_SCALE;
 
@@ -1812,6 +1982,64 @@ function shapeCutMarkup(){
   return '';
 }
 
+async function buildExportSVGString(){
+  const w = 340*MM_SCALE, h = 340*MM_SCALE;
+  let taglio = shapeCutMarkup();
+  if(state.hole){
+    const hh = SHAPE_HOLE[state.shape];
+    taglio += `<circle cx="${hh.x}" cy="${hh.holeY}" r="8.4"/>`;
+  }
+  let marcatura = '';
+  for(const el of state.elements.filter(e=>e.placed)){
+    const rot = el.rotation||0;
+    if(el.type==='text'){
+      const isFull = el.fill!=='contorno';
+      const fillAttrs = isFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
+      let textMarkup;
+      try{
+        const realFont = await loadRealFont(el.fontId);
+        const lines = textLines(el.content);
+        const lineHeight = el.size*1.18;
+        const totalH = lineHeight*lines.length;
+        const perLine = lines.map((line, i) => {
+          const txt = line.length?line:' ';
+          let p;
+          try{
+            p = getTextPathSafe(realFont, txt, 0, 0, el.size);
+          } catch(errSafe){
+            p = realFont.getPath(txt, 0, 0, el.size); // ripiego se anche il metodo sicuro fallisce
+          }
+          const bbox = p.getBoundingBox();
+          const cx = (bbox.x1+bbox.x2)/2;
+          const lineY = -totalH/2 + lineHeight/2 + i*lineHeight;
+          return `<path transform="translate(${-cx},${lineY.toFixed(2)})" d="${p.toPathData(2)}" ${fillAttrs}/>`;
+        });
+        textMarkup = perLine.join('');
+      } catch(err){
+        console.warn('Conversione font in tracciato non riuscita, uso testo con riferimento al font come ripiego', err);
+        const font = fontById(el.fontId);
+        textMarkup = `<text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text>`;
+      }
+      marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${textMarkup}</g>`;
+    } else {
+      const icon = findIcon(el.iconId);
+      const sz = el.size;
+      const iconIsFull = el.fill==='pieno';
+      const iconFillAttrs = iconIsFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
+      const inner = icon.glyph
+        ? `<text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${sz}" fill="#00FF00" font-family="'Inter',sans-serif" font-weight="600">${icon.glyph}</text>`
+        : `<g transform="translate(${-sz/2},${-sz/2}) scale(${sz/24})" ${iconFillAttrs} stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</g>`;
+      marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${inner}</g>`;
+    }
+  }
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${w.toFixed(2)}mm" height="${h.toFixed(2)}mm" viewBox="0 0 ${w.toFixed(2)} ${h.toFixed(2)}" xmlns="http://www.w3.org/2000/svg">
+  <g transform="scale(${MM_SCALE})">
+    <g id="TAGLIO" fill="none" stroke="#FF0000" stroke-width="1">${taglio}</g>
+    <g id="MARCATURA-leggera">${marcatura}</g>
+  </g>
+</svg>`;
+}
 async function exportSVG(){
   const warnings = computeAllWarnings();
   if(warnings.length>0){
@@ -1825,62 +2053,7 @@ async function exportSVG(){
   const btn = document.getElementById('exportBtn');
   if(btn){ btn.textContent = 'Preparazione...'; btn.disabled = true; }
   try {
-    const w = 340*MM_SCALE, h = 340*MM_SCALE;
-    let taglio = shapeCutMarkup();
-    if(state.hole){
-      const hh = SHAPE_HOLE[state.shape];
-      taglio += `<circle cx="${hh.x}" cy="${hh.holeY}" r="7.5"/>`;
-    }
-    let marcatura = '';
-    for(const el of state.elements.filter(e=>e.placed)){
-      const rot = el.rotation||0;
-      if(el.type==='text'){
-        const isFull = el.fill!=='contorno';
-        const fillAttrs = isFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
-        let textMarkup;
-        try{
-          const realFont = await loadRealFont(el.fontId);
-          const lines = textLines(el.content);
-          const lineHeight = el.size*1.18;
-          const totalH = lineHeight*lines.length;
-          const perLine = lines.map((line, i) => {
-            const txt = line.length?line:' ';
-            let p;
-            try{
-              p = getTextPathSafe(realFont, txt, 0, 0, el.size);
-            } catch(errSafe){
-              p = realFont.getPath(txt, 0, 0, el.size); // ripiego se anche il metodo sicuro fallisce
-            }
-            const bbox = p.getBoundingBox();
-            const cx = (bbox.x1+bbox.x2)/2;
-            const lineY = -totalH/2 + lineHeight/2 + i*lineHeight;
-            return `<path transform="translate(${-cx},${lineY.toFixed(2)})" d="${p.toPathData(2)}" ${fillAttrs}/>`;
-          });
-          textMarkup = perLine.join('');
-        } catch(err){
-          console.warn('Conversione font in tracciato non riuscita, uso testo con riferimento al font come ripiego', err);
-          const font = fontById(el.fontId);
-          textMarkup = `<text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text>`;
-        }
-        marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${textMarkup}</g>`;
-      } else {
-        const icon = findIcon(el.iconId);
-        const sz = el.size;
-        const iconIsFull = el.fill==='pieno';
-        const iconFillAttrs = iconIsFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
-        const inner = icon.glyph
-          ? `<text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${sz}" fill="#00FF00" font-family="'Inter',sans-serif" font-weight="600">${icon.glyph}</text>`
-          : `<g transform="translate(${-sz/2},${-sz/2}) scale(${sz/24})" ${iconFillAttrs} stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</g>`;
-        marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${inner}</g>`;
-      }
-    }
-    const svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${w.toFixed(2)}mm" height="${h.toFixed(2)}mm" viewBox="0 0 ${w.toFixed(2)} ${h.toFixed(2)}" xmlns="http://www.w3.org/2000/svg">
-  <g transform="scale(${MM_SCALE})">
-    <g id="TAGLIO" fill="none" stroke="#FF0000" stroke-width="1">${taglio}</g>
-    <g id="MARCATURA-leggera">${marcatura}</g>
-  </g>
-</svg>`;
+    const svg = await buildExportSVGString();
     const blob = new Blob([svg], {type:'image/svg+xml'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -1898,12 +2071,100 @@ async function exportSVG(){
   }
 }
 
+// --- Invio ordine (Drive + Sheet via Google Apps Script) ---
+// Dopo aver deployato lo script (vedi apps-script-backend.gs consegnato a parte),
+// incolla qui l'URL "/exec" del deployment e la stessa SHARED_SECRET impostata là.
+const ORDER_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycby8FmfZFAw9ykHikzSIlFO_x6lCZDp482swrDUWqShB6SzukwGdrXqgk10TEyy6dqWTbg/exec'; // es. https://script.google.com/macros/s/AKfycb.../exec
+const ORDER_SHARED_SECRET = 'DialT@g717'; // deve combaciare esattamente con SHARED_SECRET nello script
+
+function slugify(str){
+  return String(str).toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g,'') // toglie gli accenti
+    .replace(/[^a-z0-9]+/g,'-').replace(/(^-+|-+$)/g,'')
+    .slice(0,40) || 'utente';
+}
+
+function setOrderStatus(msg, kind){
+  const el = document.getElementById('orderStatus');
+  if(!el) return;
+  el.textContent = msg || '';
+  el.className = 'order-status' + (kind ? ' ' + kind : '');
+}
+function resetOrderForm(clearValues){
+  const nameEl = document.getElementById('orderName');
+  const contactEl = document.getElementById('orderContact');
+  const noteEl = document.getElementById('orderNote');
+  const btn = document.getElementById('sendOrderBtn');
+  if(!nameEl || !contactEl || !noteEl) return;
+  nameEl.disabled = false; contactEl.disabled = false; noteEl.disabled = false;
+  if(clearValues){ nameEl.value = ''; contactEl.value = ''; noteEl.value = ''; }
+  if(btn){ btn.disabled = false; btn.textContent = 'Invia la tua tag'; }
+  setOrderStatus('', '');
+}
+
+async function sendOrder(){
+  const nameEl = document.getElementById('orderName');
+  const contactEl = document.getElementById('orderContact');
+  const noteEl = document.getElementById('orderNote');
+  const name = (nameEl.value||'').trim();
+  const contact = (contactEl.value||'').trim();
+  const note = (noteEl.value||'').trim();
+
+  if(!name || !contact){
+    setOrderStatus('Compila nome e contatto prima di inviare.', 'error');
+    if(!name) nameEl.focus(); else contactEl.focus();
+    return;
+  }
+  if(ORDER_ENDPOINT_URL.indexOf('INSERISCI_QUI') !== -1){
+    setOrderStatus('Invio non ancora configurato (manca l\'URL dello script). Usa "Esporta SVG" per ora.', 'error');
+    return;
+  }
+
+  const warnings = computeAllWarnings();
+  if(warnings.length>0){
+    const oob = warnings.filter(w=>w.outOfBounds).length;
+    const hole = warnings.filter(w=>w.hitsHole).length;
+    const parts = [];
+    if(oob) parts.push(`${oob} elemento${oob>1?'i':''} fuori dalla tag`);
+    if(hole) parts.push(`${hole} elemento${hole>1?'i':''} sul foro`);
+    if(!confirm(`Attenzione: ${parts.join(' e ')}. Inviare comunque?`)) return;
+  }
+
+  const btn = document.getElementById('sendOrderBtn');
+  if(btn){ btn.disabled = true; }
+  setOrderStatus('Invio in corso…', '');
+  try{
+    const svg = await buildExportSVGString();
+    const config = { dialProject: true, version: 1, ...currentPayload() };
+    const payload = { secret: ORDER_SHARED_SECRET, name, contact, note, svg, config };
+    const res = await fetch(ORDER_ENDPOINT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // evita il preflight CORS
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if(data && data.ok){
+      setOrderStatus('La tua tag è in preparazione, stay toon!! ✨', 'success');
+      nameEl.disabled = true; contactEl.disabled = true; noteEl.disabled = true;
+      if(btn){ btn.textContent = 'Inviata ✓'; }
+    } else {
+      setOrderStatus('Invio non riuscito' + (data && data.error ? ` (${data.error})` : '') + '. Riprova.', 'error');
+      if(btn){ btn.disabled = false; }
+    }
+  } catch(err){
+    console.error('Invio ordine fallito', err);
+    setOrderStatus('Invio non riuscito. Controlla la connessione e riprova.', 'error');
+    if(btn){ btn.disabled = false; }
+  }
+}
+
 document.getElementById('newProjectLink').addEventListener('click', ()=>{
   if(!confirm('Vuoi ricominciare da zero? Le modifiche non salvate andranno perse.')) return;
   localStorage.removeItem(ACTIVE_PROJECT_KEY);
   state.step = 0; state.shape = 'round'; state.hole = true; state.elements = [];
   state.selectedId = null; state.nextId = 1; state.zoom = 1; state.panX = 0; state.panY = 0;
   historyStack.length = 0; redoStack.length = 0;
+  resetOrderForm(true);
   refreshProjectSelect();
   renderAll();
 });
@@ -1934,6 +2195,7 @@ document.getElementById('projectSelect').addEventListener('change', e=>{
 
 document.getElementById('backToEditBtn').addEventListener('click', ()=>{ state.completed = false; renderAll(); });
 document.getElementById('completionExportBtn').addEventListener('click', exportSVG);
+document.getElementById('sendOrderBtn').addEventListener('click', sendOrder);
 
 document.addEventListener('keydown', e=>{
   const activeTag = (document.activeElement && document.activeElement.tagName) || '';
