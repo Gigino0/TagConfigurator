@@ -1982,6 +1982,314 @@ function shapeCutMarkup(){
   return '';
 }
 
+// --- Clipping geometrico reale per l'export -------------------------------
+// AtomStack Studio (e diversi software per laser) NON rispettano <clipPath>
+// negli SVG importati: lo ignorano e incidono i tracciati per intero, anche
+// fuori dalla forma. Perciò qui ritagliamo davvero i punti dei tracciati
+// PRIMA di scriverli nell'SVG, così il file contiene solo geometria che sta
+// dentro il perimetro della tag, indipendentemente da cosa la apre.
+//
+// Limite noto: l'algoritmo (Sutherland-Hodgman) funziona correttamente solo
+// contro un perimetro CONVESSO. Copre round, oval, rect. Per 'bone' (forma
+// concava) il ritaglio geometrico viene saltato e si torna al clip-path SVG
+// come fallback (funziona nel browser, ma non è garantito su AtomStack: se
+// usi la forma 'bone' e vedi lo stesso problema, va gestito a parte).
+
+function flattenGlyphPath(otPath, segments=8){
+  // Converte i comandi di opentype.js (M/L/C/Q/Z) in sotto-percorsi poligonali.
+  // I contorni dei glifi dei font sono SEMPRE chiusi per definizione (TrueType/OpenType).
+  const subpaths = [];
+  let current = null, cx=0, cy=0, startX=0, startY=0;
+  for(const c of otPath.commands){
+    if(c.type==='M'){
+      current = []; current.closed = true; subpaths.push(current);
+      cx=c.x; cy=c.y; startX=cx; startY=cy;
+      current.push({x:cx,y:cy});
+    } else if(c.type==='L'){
+      cx=c.x; cy=c.y; current.push({x:cx,y:cy});
+    } else if(c.type==='C'){
+      for(let i=1;i<=segments;i++){
+        const t=i/segments, mt=1-t;
+        current.push({
+          x: mt*mt*mt*cx + 3*mt*mt*t*c.x1 + 3*mt*t*t*c.x2 + t*t*t*c.x,
+          y: mt*mt*mt*cy + 3*mt*mt*t*c.y1 + 3*mt*t*t*c.y2 + t*t*t*c.y
+        });
+      }
+      cx=c.x; cy=c.y;
+    } else if(c.type==='Q'){
+      for(let i=1;i<=segments;i++){
+        const t=i/segments, mt=1-t;
+        current.push({
+          x: mt*mt*cx + 2*mt*t*c.x1 + t*t*c.x,
+          y: mt*mt*cy + 2*mt*t*c.y1 + t*t*c.y
+        });
+      }
+      cx=c.x; cy=c.y;
+    } else if(c.type==='Z'){
+      cx=startX; cy=startY;
+    }
+  }
+  return subpaths.filter(s=>s.length>=3);
+}
+
+// Parser di un attributo "d" di path SVG generico (usato dalle icone tabler-style):
+// supporta M/L/H/V/C/S/Q/T/A in forma assoluta e relativa, comandi ripetuti implicitamente.
+// A differenza dei font, i sotto-percorsi delle icone possono essere APERTI (es. i due
+// trattini di un "+" dentro un cerchio: sono linee, non regioni chiuse) — per questo ogni
+// sotto-percorso porta con sé il flag .closed, impostato solo se compare un comando Z.
+function flattenSVGPathD(d, segments=10){
+  const tokens = d.match(/[MLHVCSQTAZmlhvcsqtaz]|-?\d*\.?\d+(?:e-?\d+)?/g) || [];
+  let i=0;
+  const isNum = () => i<tokens.length && /^-?\d/.test(tokens[i]);
+  const readNums = (n) => { const out=[]; for(let k=0;k<n;k++) out.push(parseFloat(tokens[i++])); return out; };
+  const subpaths = [];
+  let current=null, cx=0, cy=0, startX=0, startY=0, prevCtrl=null;
+
+  function pushPt(x,y){ current.push({x,y}); }
+  function cubicTo(x1,y1,x2,y2,x,y){
+    for(let k=1;k<=segments;k++){
+      const t=k/segments, mt=1-t;
+      pushPt(mt*mt*mt*cx+3*mt*mt*t*x1+3*mt*t*t*x2+t*t*t*x, mt*mt*mt*cy+3*mt*mt*t*y1+3*mt*t*t*y2+t*t*t*y);
+    }
+  }
+  function quadTo(x1,y1,x,y){
+    for(let k=1;k<=segments;k++){
+      const t=k/segments, mt=1-t;
+      pushPt(mt*mt*cx+2*mt*t*x1+t*t*x, mt*mt*cy+2*mt*t*y1+t*t*y);
+    }
+  }
+  function arcTo(rx,ry,xrot,largeArc,sweep,x,y){
+    // Conversione endpoint -> centro secondo la formula standard SVG 1.1 (Appendice F.6)
+    if(rx===0||ry===0){ pushPt(x,y); return; }
+    rx=Math.abs(rx); ry=Math.abs(ry);
+    const phi = xrot*Math.PI/180, cosP=Math.cos(phi), sinP=Math.sin(phi);
+    const dx2=(cx-x)/2, dy2=(cy-y)/2;
+    const x1p = cosP*dx2+sinP*dy2, y1p = -sinP*dx2+cosP*dy2;
+    let rxs=rx*rx, rys=ry*ry;
+    const x1ps=x1p*x1p, y1ps=y1p*y1p;
+    const lambda = x1ps/rxs + y1ps/rys;
+    if(lambda>1){ const s=Math.sqrt(lambda); rx*=s; ry*=s; rxs=rx*rx; rys=ry*ry; }
+    const sign = (largeArc!==sweep) ? 1 : -1;
+    const num = Math.max(0, rxs*rys - rxs*y1ps - rys*x1ps);
+    const co = sign*Math.sqrt(num/(rxs*y1ps+rys*x1ps || 1e-9));
+    const cxp = co*rx*y1p/ry, cyp = -co*ry*x1p/rx;
+    const centerX = cosP*cxp - sinP*cyp + (cx+x)/2;
+    const centerY = sinP*cxp + cosP*cyp + (cy+y)/2;
+    const angle = (ux,uy,vx,vy) => {
+      const dot=ux*vx+uy*vy, len=Math.sqrt((ux*ux+uy*uy)*(vx*vx+vy*vy));
+      let a=Math.acos(Math.min(1,Math.max(-1,dot/len)));
+      if(ux*vy-uy*vx<0) a=-a;
+      return a;
+    };
+    const theta1 = angle(1,0,(x1p-cxp)/rx,(y1p-cyp)/ry);
+    let dTheta = angle((x1p-cxp)/rx,(y1p-cyp)/ry,(-x1p-cxp)/rx,(-y1p-cyp)/ry);
+    if(!sweep && dTheta>0) dTheta -= 2*Math.PI;
+    if(sweep && dTheta<0) dTheta += 2*Math.PI;
+    const nSeg = Math.max(4, Math.ceil(Math.abs(dTheta)/(Math.PI/segments)));
+    for(let k=1;k<=nSeg;k++){
+      const t = theta1 + dTheta*(k/nSeg);
+      pushPt(centerX+rx*Math.cos(t)*cosP-ry*Math.sin(t)*sinP, centerY+rx*Math.cos(t)*sinP+ry*Math.sin(t)*cosP);
+    }
+  }
+
+  while(i<tokens.length){
+    const t = tokens[i++];
+    if(t==='M'||t==='m'){
+      const rel = t==='m';
+      let [x,y] = readNums(2);
+      if(rel){ x+=cx; y+=cy; }
+      cx=x; cy=y; startX=cx; startY=cy;
+      current=[]; current.closed=false; subpaths.push(current); pushPt(cx,cy);
+      while(isNum()){ let [nx,ny]=readNums(2); if(rel){ nx+=cx; ny+=cy; } cx=nx; cy=ny; pushPt(cx,cy); }
+      prevCtrl=null;
+    } else if(t==='L'||t==='l'){
+      const rel = t==='l';
+      while(isNum()){ let [x,y]=readNums(2); if(rel){ x+=cx; y+=cy; } cx=x; cy=y; pushPt(cx,cy); }
+      prevCtrl=null;
+    } else if(t==='H'||t==='h'){
+      const rel = t==='h';
+      while(isNum()){ let [x]=readNums(1); if(rel) x+=cx; cx=x; pushPt(cx,cy); }
+      prevCtrl=null;
+    } else if(t==='V'||t==='v'){
+      const rel = t==='v';
+      while(isNum()){ let [y]=readNums(1); if(rel) y+=cy; cy=y; pushPt(cx,cy); }
+      prevCtrl=null;
+    } else if(t==='C'||t==='c'){
+      const rel = t==='c';
+      while(isNum()){
+        let [x1,y1,x2,y2,x,y]=readNums(6);
+        if(rel){ x1+=cx; y1+=cy; x2+=cx; y2+=cy; x+=cx; y+=cy; }
+        cubicTo(x1,y1,x2,y2,x,y); prevCtrl={x:x2,y:y2}; cx=x; cy=y;
+      }
+    } else if(t==='S'||t==='s'){
+      const rel = t==='s';
+      while(isNum()){
+        let [x2,y2,x,y]=readNums(4);
+        if(rel){ x2+=cx; y2+=cy; x+=cx; y+=cy; }
+        const x1=prevCtrl?2*cx-prevCtrl.x:cx, y1=prevCtrl?2*cy-prevCtrl.y:cy;
+        cubicTo(x1,y1,x2,y2,x,y); prevCtrl={x:x2,y:y2}; cx=x; cy=y;
+      }
+    } else if(t==='Q'||t==='q'){
+      const rel = t==='q';
+      while(isNum()){
+        let [x1,y1,x,y]=readNums(4);
+        if(rel){ x1+=cx; y1+=cy; x+=cx; y+=cy; }
+        quadTo(x1,y1,x,y); prevCtrl={x:x1,y:y1}; cx=x; cy=y;
+      }
+    } else if(t==='T'||t==='t'){
+      const rel = t==='t';
+      while(isNum()){
+        let [x,y]=readNums(2);
+        if(rel){ x+=cx; y+=cy; }
+        const x1=prevCtrl?2*cx-prevCtrl.x:cx, y1=prevCtrl?2*cy-prevCtrl.y:cy;
+        quadTo(x1,y1,x,y); prevCtrl={x:x1,y:y1}; cx=x; cy=y;
+      }
+    } else if(t==='A'||t==='a'){
+      const rel = t==='a';
+      while(isNum()){
+        let [rx,ry,xrot,laf,sf,x,y]=readNums(7);
+        if(rel){ x+=cx; y+=cy; }
+        arcTo(rx,ry,xrot,!!laf,!!sf,x,y); cx=x; cy=y;
+      }
+      prevCtrl=null;
+    } else if(t==='Z'||t==='z'){
+      if(current){ current.closed = true; }
+      cx=startX; cy=startY;
+      prevCtrl=null;
+    }
+  }
+  return subpaths.filter(s=>s.length>=2);
+}
+function extractPathDs(markup){
+  const ds = [];
+  const re = /d="([^"]+)"/g;
+  let m;
+  while((m=re.exec(markup||''))) ds.push(m[1]);
+  return ds;
+}
+
+function circlePolygonPts(cx,cy,r,n=160){
+  const pts=[];
+  for(let i=0;i<n;i++){
+    const a=(i/n)*Math.PI*2;
+    pts.push({x:cx+r*Math.cos(a), y:cy+r*Math.sin(a)});
+  }
+  return pts;
+}
+function ellipsePolygonPts(cx,cy,rx,ry,n=160){
+  const pts=[];
+  for(let i=0;i<n;i++){
+    const a=(i/n)*Math.PI*2;
+    pts.push({x:cx+rx*Math.cos(a), y:cy+ry*Math.sin(a)});
+  }
+  return pts;
+}
+function clipShapePolygon(){
+  const s = state.shape;
+  if(s==='round') return circlePolygonPts(170,170,140);
+  if(s==='oval')  return ellipsePolygonPts(170,170,152,102);
+  if(s==='rect')  return [{x:38,y:68},{x:302,y:68},{x:302,y:272},{x:38,y:272}]; // angoli arrotondati (rx=26) ignorati: margine di sicurezza minimo, non un problema per l'incisione
+  return null; // 'bone' o forma non gestita: nessun ritaglio geometrico
+}
+function intersectLines(p1,p2,p3,p4){
+  const denom = (p1.x-p2.x)*(p3.y-p4.y)-(p1.y-p2.y)*(p3.x-p4.x);
+  if(Math.abs(denom)<1e-9) return p2;
+  const t = ((p1.x-p3.x)*(p3.y-p4.y)-(p1.y-p3.y)*(p3.x-p4.x))/denom;
+  return {x: p1.x+t*(p2.x-p1.x), y: p1.y+t*(p2.y-p1.y)};
+}
+function clipPolygonSH(subject, clipPoly){
+  // Sutherland-Hodgman: ritaglio di un poligono CHIUSO (area di riempimento) contro un
+  // perimetro convesso. Corretto per il fill: il nuovo bordo diventa legittimamente
+  // parte della forma riempita. NON va usato per il contorno (vedi clipPolylineConvex).
+  let output = subject;
+  const n = clipPoly.length;
+  for(let i=0; i<n && output.length; i++){
+    const A = clipPoly[i], B = clipPoly[(i+1)%n];
+    const side = (p) => ((B.x-A.x)*(p.y-A.y) - (B.y-A.y)*(p.x-A.x));
+    const input = output;
+    output = [];
+    for(let j=0;j<input.length;j++){
+      const cur = input[j], prev = input[(j-1+input.length)%input.length];
+      const curSide = side(cur), prevSide = side(prev);
+      const curIn = curSide>=0, prevIn = prevSide>=0;
+      if(curIn){
+        if(!prevIn) output.push(intersectLines(prev,cur,A,B));
+        output.push(cur);
+      } else if(prevIn){
+        output.push(intersectLines(prev,cur,A,B));
+      }
+    }
+  }
+  return output;
+}
+
+function clipSegmentConvex(p0, p1, clipPoly){
+  // Cyrus-Beck: ritaglia UN segmento contro un poligono convesso. Per proprietà di
+  // convessità, il risultato è sempre un unico intervallo [tE,tL] (mai spezzato in più
+  // pezzi) — questo è ciò che rende l'algoritmo semplice e sufficiente qui.
+  let tE=0, tL=1;
+  for(let i=0;i<clipPoly.length;i++){
+    const A=clipPoly[i], B=clipPoly[(i+1)%clipPoly.length];
+    const side = (P) => ((B.x-A.x)*(P.y-A.y) - (B.y-A.y)*(P.x-A.x));
+    const s0=side(p0), s1=side(p1), ds=s1-s0;
+    if(Math.abs(ds)<1e-9){
+      if(s0<0) return null; // segmento parallelo al bordo e interamente fuori
+      continue;
+    }
+    const t = -s0/ds;
+    if(ds>0){ if(t>tE) tE=t; } else { if(t<tL) tL=t; }
+    if(tE>tL) return null;
+  }
+  if(tE>tL) return null;
+  return [ {x:p0.x+tE*(p1.x-p0.x), y:p0.y+tE*(p1.y-p0.y)}, {x:p0.x+tL*(p1.x-p0.x), y:p0.y+tL*(p1.y-p0.y)} ];
+}
+function clipPolylineConvex(points, clipPoly){
+  // Ritaglia una polilinea APERTA (il contorno, non l'area) contro un perimetro convesso.
+  // Ritorna un array di frammenti aperti: ogni volta che la linea esce e rientra nel
+  // perimetro genera un nuovo frammento separato, invece di aggiungere un bordo spurio
+  // lungo il perimetro (che sarebbe sbagliato per un semplice contorno/outline).
+  const out = [];
+  let cur = null;
+  for(let i=0;i<points.length-1;i++){
+    const seg = clipSegmentConvex(points[i], points[i+1], clipPoly);
+    if(seg){
+      if(cur && Math.abs(cur[cur.length-1].x-seg[0].x)<1e-6 && Math.abs(cur[cur.length-1].y-seg[0].y)<1e-6){
+        cur.push(seg[1]);
+      } else {
+        if(cur) out.push(cur);
+        cur = [seg[0], seg[1]];
+      }
+    } else {
+      if(cur) out.push(cur);
+      cur = null;
+    }
+  }
+  if(cur) out.push(cur);
+  return out;
+}
+
+function emitClippedContours(subpaths, clipPoly, isFull, fillAttrs){
+  // Punto unico che sceglie il metodo di ritaglio corretto: poligono chiuso per il
+  // riempimento, polilinea aperta per il contorno — vedi le note sopra.
+  let d = '';
+  for(const sub of subpaths){
+    if(isFull){
+      const clipped = clipPoly ? clipPolygonSH(sub, clipPoly) : sub;
+      if(clipped.length>=3) d += 'M'+clipped.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join('L')+'Z';
+    } else if(!clipPoly){
+      const pts = sub.closed ? [...sub, sub[0]] : sub;
+      d += 'M'+pts.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join('L');
+    } else {
+      const pts = sub.closed ? [...sub, sub[0]] : sub;
+      const fragments = clipPolylineConvex(pts, clipPoly);
+      for(const frag of fragments){
+        if(frag.length>=2) d += 'M'+frag.map(p=>`${p.x.toFixed(2)},${p.y.toFixed(2)}`).join('L');
+      }
+    }
+  }
+  return d ? `<path d="${d}" ${fillAttrs}/>` : '';
+}
+
 async function buildExportSVGString(){
   const w = 340*MM_SCALE, h = 340*MM_SCALE;
   let taglio = shapeCutMarkup();
@@ -1989,19 +2297,22 @@ async function buildExportSVGString(){
     const hh = SHAPE_HOLE[state.shape];
     taglio += `<circle cx="${hh.x}" cy="${hh.holeY}" r="8.4"/>`;
   }
+  const clipPoly = clipShapePolygon();
   let marcatura = '';
   for(const el of state.elements.filter(e=>e.placed)){
     const rot = el.rotation||0;
     if(el.type==='text'){
       const isFull = el.fill!=='contorno';
       const fillAttrs = isFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
-      let textMarkup;
+      const rad = rot*Math.PI/180, cosR = Math.cos(rad), sinR = Math.sin(rad);
+      const toGlobal = (x,y) => ({ x: (x*cosR - y*sinR) + el.x, y: (x*sinR + y*cosR) + el.y });
       try{
         const realFont = await loadRealFont(el.fontId);
         const lines = textLines(el.content);
         const lineHeight = el.size*1.18;
         const totalH = lineHeight*lines.length;
-        const perLine = lines.map((line, i) => {
+        const allSubpaths = [];
+        lines.forEach((line, i) => {
           const txt = line.length?line:' ';
           let p;
           try{
@@ -2012,31 +2323,62 @@ async function buildExportSVGString(){
           const bbox = p.getBoundingBox();
           const cx = (bbox.x1+bbox.x2)/2;
           const lineY = -totalH/2 + lineHeight/2 + i*lineHeight;
-          return `<path transform="translate(${-cx},${lineY.toFixed(2)})" d="${p.toPathData(2)}" ${fillAttrs}/>`;
+          for(const sub of flattenGlyphPath(p, 8)){
+            const globalSub = sub.map(pt => toGlobal(pt.x - cx, pt.y + lineY));
+            globalSub.closed = true; // contorni dei font sempre chiusi
+            allSubpaths.push(globalSub);
+          }
         });
-        textMarkup = perLine.join('');
+        marcatura += emitClippedContours(allSubpaths, clipPoly, isFull, fillAttrs);
       } catch(err){
-        console.warn('Conversione font in tracciato non riuscita, uso testo con riferimento al font come ripiego', err);
+        console.warn('Conversione font in tracciato non riuscita, uso testo con riferimento al font come ripiego (NB: in questo caso il ritaglio geometrico non viene applicato)', err);
         const font = fontById(el.fontId);
-        textMarkup = `<text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text>`;
+        marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})"><text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text></g>`;
       }
-      marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${textMarkup}</g>`;
     } else {
       const icon = findIcon(el.iconId);
       const sz = el.size;
       const iconIsFull = el.fill==='pieno';
       const iconFillAttrs = iconIsFull ? `fill="#00FF00" stroke="none"` : `fill="none" stroke="#00FF00" stroke-width="${ENGRAVE_LINE_INTERNAL.toFixed(3)}"`;
-      const inner = icon.glyph
-        ? `<text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${sz}" fill="#00FF00" font-family="'Inter',sans-serif" font-weight="600">${icon.glyph}</text>`
-        : `<g transform="translate(${-sz/2},${-sz/2}) scale(${sz/24})" ${iconFillAttrs} stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</g>`;
-      marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${inner}</g>`;
+      if(icon.glyph){
+        // Icona di ripiego per id sconosciuto (in pratica non dovrebbe mai capitare, gli id
+        // vengono sempre dall'elenco ICONS): nessun tracciato vettoriale disponibile, quindi
+        // niente ritaglio geometrico possibile. Resta l'unico punto dove può ripresentarsi
+        // il problema visto con AtomStack, se mai capitasse.
+        marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})"><text x="0" y="0" text-anchor="middle" dominant-baseline="central" font-size="${sz}" fill="#00FF00" font-family="'Inter',sans-serif" font-weight="600">${icon.glyph}</text></g>`;
+      } else {
+        const rad = rot*Math.PI/180, cosR = Math.cos(rad), sinR = Math.sin(rad);
+        const toGlobalIcon = (x,y) => {
+          const sx = x*sz/24 - sz/2, sy = y*sz/24 - sz/2;
+          return { x:(sx*cosR - sy*sinR)+el.x, y:(sx*sinR + sy*cosR)+el.y };
+        };
+        try{
+          const dStrings = [icon.d, ...extractPathDs(icon.extra)].filter(Boolean);
+          const allSubpaths = [];
+          for(const dStr of dStrings){
+            for(const sub of flattenSVGPathD(dStr, 10)){
+              const globalSub = sub.map(pt => toGlobalIcon(pt.x, pt.y));
+              globalSub.closed = sub.closed;
+              allSubpaths.push(globalSub);
+            }
+          }
+          marcatura += emitClippedContours(allSubpaths, clipPoly, iconIsFull, iconFillAttrs);
+        } catch(err){
+          console.warn('Ritaglio geometrico icona non riuscito, uso il tracciato originale non ritagliato come ripiego', err);
+          const inner = `<g transform="translate(${-sz/2},${-sz/2}) scale(${sz/24})" ${iconFillAttrs} stroke-linecap="round" stroke-linejoin="round">${icon.d?`<path d="${icon.d}"/>`:''}${icon.extra||''}</g>`;
+          marcatura += `<g transform="translate(${el.x},${el.y}) rotate(${rot})">${inner}</g>`;
+        }
+      }
     }
   }
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${w.toFixed(2)}mm" height="${h.toFixed(2)}mm" viewBox="0 0 ${w.toFixed(2)} ${h.toFixed(2)}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="exportClip">${taglio}</clipPath>
+  </defs>
   <g transform="scale(${MM_SCALE})">
     <g id="TAGLIO" fill="none" stroke="#FF0000" stroke-width="1">${taglio}</g>
-    <g id="MARCATURA-leggera">${marcatura}</g>
+    <g id="MARCATURA-leggera" clip-path="url(#exportClip)">${marcatura}</g>
   </g>
 </svg>`;
 }
