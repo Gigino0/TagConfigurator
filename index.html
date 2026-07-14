@@ -43,6 +43,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 
 .hamburger-btn{ display:none; }
 .menu-backdrop{ display:none; }
+.steps-inline-slot{ display:contents; }
 .control-bar{ display:flex; justify-content:center; margin:22px 0 6px; }
 .text-input-row{ display:flex; gap:0; width:100%; max-width:380px; }
 .text-input{ flex:1; background:var(--panel-2); border:1px solid var(--line); border-right:none; color:var(--text-1); font-family:var(--font-body); font-size:16px; padding:12px 14px; border-radius:2px 0 0 2px; resize:none; overflow:hidden; line-height:1.3; max-height:140px; }
@@ -205,15 +206,23 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
     height:100vh; height:100dvh; max-height:100vh; max-height:100dvh;
     display:flex; flex-direction:column; overflow:hidden;
   }
-  .topbar{ flex:0 0 auto; padding-bottom:6px; margin-bottom:2px; position:relative; }
+  .topbar{ flex:0 0 auto; padding-bottom:6px; margin-bottom:2px; position:relative; justify-content:flex-start; gap:10px; }
 
-  /* Hamburger: unico elemento sempre visibile del topbar oltre al brand.
-     Il resto (salvataggi/progetti/step) va nel drawer che si apre da destra,
-     così non sottrae mai spazio orizzontale al pannello di personalizzazione. */
+  /* Le pillole 01/02/03 restano sempre visibili accanto al brand (spostate qui
+     via JS da relocateSteps()) — sono premibili per saltare direttamente a uno
+     step, e sostituiscono la numerazione che prima stava dentro ogni step-head. */
+  .steps-inline-slot .steps{ gap:4px; }
+  .steps-inline-slot .step-pill{ padding:5px 9px; font-size:10px; }
+
+  /* Hamburger: spinto in fondo a destra, unico elemento oltre a brand/step
+     sempre visibile nel topbar. Il resto (salvataggi/progetti) va nel drawer
+     che si apre da destra, così non sottrae mai spazio orizzontale al pannello
+     di personalizzazione. */
   .hamburger-btn{
     display:flex; align-items:center; justify-content:center;
     width:36px; height:36px; padding:0; background:transparent;
     border:1px solid var(--line); border-radius:2px; color:var(--text-1); cursor:pointer;
+    margin-left:auto; flex-shrink:0;
   }
   .hamburger-btn svg{ width:19px; height:19px; }
   .hamburger-btn:active{ border-color:var(--ember); }
@@ -227,7 +236,6 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
     transform:translateX(100%); transition:transform .22s ease;
   }
   .topbar-right.open{ transform:translateX(0); }
-  .topbar-right .steps{ flex-direction:column; gap:8px; margin-top:6px; }
   .new-project-link, .save-indicator, .project-select{ flex-shrink:0; }
   .project-select{ max-width:none; width:100%; }
 
@@ -243,22 +251,37 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
      lista elementi piazzati), che prima finiva schiacciata a destra sotto il
      pannello superiore. */
   #stepView{
-    flex:1 1 auto; min-height:0;
+    flex:1 1 auto; min-height:0; position:relative;
     display:grid;
     grid-template-columns:minmax(150px,30%) 1fr;
-    grid-template-rows:auto auto 1fr auto;
+    grid-template-rows:auto auto 1fr;
     column-gap:12px;
   }
-  .step-head{ grid-column:1; grid-row:1; padding:4px 0 0; text-align:left; }
-  .step-title{ font-size:17px; margin:0 0 2px; }
-  .step-sub{ font-size:11px; max-width:none; line-height:1.3; }
+  .step-head{ grid-column:1; grid-row:1; padding:2px 0 0; text-align:left; }
+  .step-num{ display:none; }
+  .step-title{ font-size:17px; margin:0; }
+  .step-sub{ display:none; }
   .bounds-warning{ grid-column:1; grid-row:2; margin:0 0 4px; }
   .control-bar{
     grid-column:1; grid-row:3; min-height:0; margin:4px 0 0;
-    overflow-y:auto; -webkit-overflow-scrolling:touch;
-    display:block;
+    overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch;
+    display:block; padding-bottom:64px;
   }
-  .nav-row{ grid-column:1; grid-row:4; margin-top:6px; flex-wrap:wrap; justify-content:flex-start; }
+  .text-input{ min-width:0; }
+  .text-input-row{ width:100%; }
+
+  /* Barra di navigazione (Annulla/Ripeti/Esporta/Avanti): non più incastrata
+     nella colonna sinistra stretta (dove costringeva metà pannello su due
+     righe), ma flottante in basso a destra sopra il canvas. "Indietro" è
+     omesso su mobile — è ridondante con le pillole di step, sempre premibili
+     in alto, e libera spazio ai pulsanti che servono davvero. */
+  .nav-row{
+    position:fixed; right:10px; bottom:8px; z-index:30;
+    margin:0; gap:6px; flex-wrap:nowrap;
+  }
+  .nav-row .btn{ padding:7px 11px; font-size:10px; white-space:nowrap; }
+  .nav-row .btn-undo{ width:30px; height:30px; }
+  .nav-row .btn-undo svg{ width:15px; height:15px; }
 
   /* Righe di controllo dentro control-bar: erano centrate per una colonna
      larga quanto tutta la pagina, ora la colonna è stretta, meglio a sinistra. */
@@ -269,16 +292,27 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
      control-bar (che ora è il contenitore scrollabile). */
   .icon-grid{ grid-template-columns:repeat(4,1fr); max-width:none; max-height:none; margin:0 0 10px; }
 
-  .shape-row{ gap:10px; }
-  .shape-card-row{ width:100px; padding:10px 12px 8px; }
-  .shape-card-row svg{ width:34px; height:34px; }
+  /* Forme: una sotto l'altra, piena larghezza della colonna sinistra, icona +
+     nome affiancati invece di card quadrate — più leggibili e premibili col
+     pollice di quanto non fossero 4 card strette in riga. */
+  .shape-row{ flex-direction:column; gap:6px; max-width:none; width:100%; }
+  .shape-card-row{
+    width:100%; display:flex; flex-direction:row; align-items:center; gap:12px;
+    padding:9px 12px; text-align:left;
+  }
+  .shape-card-row svg{ width:30px; height:30px; flex-shrink:0; }
+  .shape-card-row .name{ margin-top:0; font-size:11.5px; }
 
   .orbit-wrap{
-    grid-column:2; grid-row:1 / 5; align-self:stretch;
+    grid-column:2; grid-row:1 / 4; align-self:stretch;
     height:100%; max-width:none; margin-top:0;
-    display:flex; flex-direction:row; align-items:flex-start; gap:14px;
+    display:flex; flex-direction:row; align-items:flex-start; justify-content:center; gap:14px;
   }
   .orbit-wrap::before, .orbit-wrap::after{ display:none; }
+  /* Sullo step Forma non ci sono satelliti da elencare: nascondo la colonna
+     lista e centro la tag in tutto lo spazio disponibile, invece di lasciarla
+     spinta a sinistra da una lista vuota ma comunque flex:1. */
+  .orbit-wrap.solo-shape #orbitItemsList{ display:none; }
   .tag-center{
     position:static; transform:none; width:auto; flex:0 0 auto; gap:5px;
   }
@@ -286,9 +320,21 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
   .stage-readout{ display:none; }
   #orbitItemsList{
     position:static; flex:1 1 auto; display:flex; flex-direction:column; gap:8px;
-    max-height:100%; overflow-y:auto; padding-right:4px;
+    max-height:100%; overflow-y:auto; padding-right:4px; padding-bottom:64px;
   }
   .orbit-item{ position:static !important; width:100% !important; }
+
+  /* Foro per anellino (step Forma) e Griglia (step Testo/Icone): mai insieme
+     nello stesso step, quindi condividono la stessa posizione flottante,
+     sopra la nav-row. Più piccoli della versione desktop. */
+  .hole-toggle, .grid-toggle-row{
+    position:fixed; right:10px; bottom:50px; z-index:30;
+    margin:0; padding:5px 11px; font-size:10.5px; gap:6px;
+    border-top:none; padding-top:5px;
+  }
+  .hole-toggle .switch, .grid-toggle-row .switch{ width:26px; height:15px; }
+  .hole-toggle .switch .knob, .grid-toggle-row .switch .knob{ width:11px; height:11px; }
+  .hole-toggle .switch.on .knob, .grid-toggle-row .switch.on .knob{ left:13px; }
 
   .sat-size button{ width:32px; height:32px; font-size:15px; }
 
@@ -331,6 +377,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 <div class="app">
   <div class="topbar">
     <div class="brand"><span class="brand-mark">DIAL</span><span class="brand-sub">Configuratore tag</span></div>
+    <div class="steps-inline-slot" id="stepsInlineSlot"></div>
     <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
@@ -1493,7 +1540,19 @@ function attachSatelliteDrag(previewEl, elId){
   });
 }
 
+function relocateSteps(){
+  // Su mobile le pillole 01/02/03 escono dal drawer hamburger e vivono
+  // sempre visibili accanto al brand, in alto: sono la sola numerazione
+  // di step rimasta (quella dentro ogni step-head è nascosta via CSS mobile).
+  const stepsEl = document.getElementById('steps');
+  const inlineSlot = document.getElementById('stepsInlineSlot');
+  const topbarRight = document.getElementById('topbarRight');
+  const target = isMobileLayout() ? inlineSlot : topbarRight;
+  if(stepsEl.parentElement !== target) target.appendChild(stepsEl);
+}
+
 function renderSteps(){
+  relocateSteps();
   const el = document.getElementById('steps');
   el.innerHTML = STEPS.map((s,i)=>{
     const cls = i===state.step ? 'active' : (i<state.step ? 'done' : '');
@@ -1583,6 +1642,7 @@ function renderOrbit(){
   const list = document.getElementById('orbitItemsList');
   list.querySelectorAll('.orbit-item').forEach(n=>n.remove());
   const step = STEPS[state.step];
+  document.getElementById('orbitWrap').classList.toggle('solo-shape', step==='forma');
   if(step==='forma'){
     // le forme sono in riga nella control bar, nessun satellite qui
   } else {
@@ -1766,8 +1826,9 @@ function renderNav(){
   const isLast = state.step===STEPS.length-1;
   const canUndo = historyStack.length >= 2;
   const canRedo = redoStack.length > 0;
+  const mobile = isMobileLayout();
   row.innerHTML = `
-    <button class="btn" id="navBack" ${isFirst?'disabled':''}>Indietro</button>
+    ${mobile ? '' : `<button class="btn" id="navBack" ${isFirst?'disabled':''}>Indietro</button>`}
     <button class="btn btn-undo" id="undoBtn" title="Annulla ultima modifica (Ctrl+Z)" ${canUndo?'':'disabled'}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14l-4 -4l4 -4"/><path d="M5 10h11a4 4 0 1 1 0 8h-1"/></svg>
     </button>
@@ -1777,7 +1838,7 @@ function renderNav(){
     <button class="btn" id="exportBtn">Esporta SVG</button>
     <button class="btn btn-primary" id="navNext">${isLast?'Configurazione completata':'Avanti'}</button>
   `;
-  document.getElementById('navBack').addEventListener('click', ()=>{ state.step=Math.max(0,state.step-1); renderAll(); });
+  if(!mobile) document.getElementById('navBack').addEventListener('click', ()=>{ state.step=Math.max(0,state.step-1); renderAll(); });
   document.getElementById('undoBtn').addEventListener('click', undoLast);
   document.getElementById('redoBtn').addEventListener('click', redoNext);
   document.getElementById('exportBtn').addEventListener('click', exportSVG);
