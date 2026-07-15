@@ -162,6 +162,24 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .sat-size button{ width:22px; height:22px; border:1px solid var(--line); background:var(--panel-2); color:var(--text-2); cursor:pointer; border-radius:2px; font-size:13px; line-height:1; }
 .sat-size button:hover{ border-color:var(--steel-3); color:var(--text-1); }
 .sat-size span{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-3); min-width:22px; text-align:center; }
+.sat-curve{ margin-bottom:8px; }
+.sat-curve-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.sat-curve-label{ font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; color:var(--text-3); letter-spacing:0.04em; }
+.sat-curve-val{ font-family:var(--font-mono); font-size:10px; color:var(--text-2); }
+.sat-curve-reset{ font-family:var(--font-mono); font-size:9px; text-transform:uppercase; color:var(--text-3); cursor:pointer; }
+.sat-curve-reset:hover{ color:var(--ember); }
+.sat-curve input[type="range"]{
+  -webkit-appearance:none; appearance:none; width:100%; height:16px; background:transparent; cursor:pointer; margin:0;
+}
+.sat-curve input[type="range"]::-webkit-slider-runnable-track{ height:3px; background:var(--line); border-radius:2px; }
+.sat-curve input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:14px; height:14px; margin-top:-5.5px; border-radius:50%;
+  background:var(--ember); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line);
+}
+.sat-curve input[type="range"]::-moz-range-track{ height:3px; background:var(--line); border-radius:2px; }
+.sat-curve input[type="range"]::-moz-range-thumb{
+  width:12px; height:12px; border-radius:50%; background:var(--ember); border:2px solid var(--panel); box-shadow:0 0 0 1px var(--line);
+}
 .sat-del{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; color:var(--text-3); cursor:pointer; }
 .sat-del:hover{ color:var(--ember); }
 .sat-dup{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; color:var(--text-3); cursor:pointer; }
@@ -197,6 +215,31 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .rotate-gate-icon svg{ width:100%; height:100%; }
 @keyframes rotateHint{ 0%,20%{ transform:rotate(0deg); } 50%,70%{ transform:rotate(90deg); } 100%{ transform:rotate(90deg); } }
 .rotate-gate-text{ font-family:var(--font-mono); font-size:13.5px; letter-spacing:0.03em; color:var(--text-2); text-transform:uppercase; line-height:1.7; max-width:260px; }
+
+/* --- Prezzo live + pannello soglie --- */
+.price-widget{ position:fixed; right:16px; bottom:16px; z-index:500; display:flex; flex-direction:column; align-items:flex-end; gap:8px; font-family:var(--font-mono); }
+.price-badge{ display:flex; align-items:center; gap:10px; background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:9px 16px; cursor:pointer; box-shadow:0 4px 18px rgba(0,0,0,0.35); user-select:none; }
+.price-badge:hover{ border-color:var(--brass); }
+.price-badge .amount{ font-family:var(--font-display); font-size:19px; font-weight:600; color:var(--ember); letter-spacing:0.01em; }
+.price-badge.capped .amount{ color:var(--brass); }
+.price-badge .caret{ font-size:9px; color:var(--text-3); transition:transform .15s; }
+.price-badge.open .caret{ transform:rotate(180deg); }
+.price-panel{ display:none; width:280px; max-height:60vh; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px; box-shadow:0 8px 26px rgba(0,0,0,0.45); }
+.price-panel.open{ display:block; }
+.price-panel h4{ margin:0 0 8px; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-3); font-weight:500; }
+.price-soglia{ display:flex; gap:8px; padding:6px 0; border-bottom:1px solid var(--line); align-items:flex-start; }
+.price-soglia:last-child{ border-bottom:none; }
+.price-soglia .dot{ flex-shrink:0; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--steel-3); margin-top:2px; }
+.price-soglia.on .dot{ background:var(--ember); border-color:var(--ember); }
+.price-soglia .label{ font-size:11px; color:var(--text-2); line-height:1.5; }
+.price-soglia .label b{ color:var(--text-1); font-weight:500; }
+.price-breakdown{ font-size:10.5px; color:var(--text-3); margin-top:10px; padding-top:10px; border-top:1px solid var(--line); line-height:1.6; }
+@media (pointer:coarse) and (max-width:980px){
+  .price-widget{ right:8px; bottom:8px; }
+  .price-badge{ padding:7px 12px; }
+  .price-badge .amount{ font-size:16px; }
+  .price-panel{ width:min(280px, calc(100vw - 32px)); max-height:50vh; }
+}
 
 /* --- Layout mobile: telefono in orizzontale (touch screen, larghezza limitata) --- */
 @media (pointer:coarse) and (max-width:980px){
@@ -374,6 +417,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
   </div>
   <p class="rotate-gate-text">Ruota il telefono in orizzontale<br>per usare il configuratore</p>
 </div>
+<div class="price-widget" id="priceWidget"></div>
 <div class="app">
   <div class="topbar">
     <div class="brand"><span class="brand-mark">DIAL</span><span class="brand-sub">Configuratore tag</span></div>
@@ -590,7 +634,7 @@ function elementCorners(el){
     hw = el.size/2+6; hh = el.size/2+6;
   } else {
     const font = fontById(el.fontId);
-    const blk = estimateTextBlockSize(el.content, el.size, font.id);
+    const blk = estimateTextBlockSize(el.content, el.size, font.id, el.curve);
     hw = blk.width/2+8; hh = blk.height/2+8;
   }
   const rot = (el.rotation||0) * Math.PI/180;
@@ -1075,6 +1119,127 @@ const FONTS = [
 ];
 function fontById(id){ return FONTS.find(f=>f.id===id) || FONTS[0]; }
 
+// ==================== PRICING — coefficienti (sistema soglie v3) ====================
+// Coefficiente icona (per id) e coefficiente font (per id), presi dal calcolatore
+// v3 validato su 6 tag reali. Tenere allineati se ICONS/FONTS cambiano.
+const PRICE_ICON_SIZE_DEFAULT = 28, PRICE_TEXT_SIZE_DEFAULT = 21;
+const SOGLIA5_TETTO = 1000;
+const SOGLIA5_PREZZO = 5.50;
+
+function evaluateSoglie(icone, testi){
+  const nIcone = icone.length, nTesti = testi.length, totElementi = nIcone + nTesti;
+  const s1 = totElementi >= 3 && nIcone >= 1 && nTesti >= 1;
+  const s2 = nTesti >= 3;
+  const s3 = nIcone >= 5;
+  const s4 = nIcone >= 10;
+  return { s1, s2, s3, s4, nIcone, nTesti, totElementi };
+}
+function priceSizeMultAttenuated(size, def, s1){
+  const orig = size / def;
+  return s1 ? (1 + (orig - 1) * 0.4) : orig;
+}
+function priceRankDiscountFactor(rank, s3, s4){
+  if(!s3) return 1.0;
+  if(rank <= 2) return 1.0;
+  if(!s4) return 0.35;
+  const sched = {3:0.50, 4:0.45, 5:0.40, 6:0.35, 7:0.30};
+  return sched[rank] !== undefined ? sched[rank] : 0.25;
+}
+function computeIconScore(icone, sg){
+  const withMult = icone.map(el => {
+    const coeff = ICON_COEFF[el.iconId] || 0;
+    const mult = priceSizeMultAttenuated(el.size, PRICE_ICON_SIZE_DEFAULT, sg.s1);
+    return { el, coeff, mult, value: coeff * mult };
+  });
+  const ranked = [...withMult].sort((a,b) => b.value - a.value);
+  ranked.forEach((r,i) => { r.rank = i + 1; });
+  let total = 0;
+  for(const r of ranked){
+    r.posDiscount = priceRankDiscountFactor(r.rank, sg.s3, sg.s4);
+    r.subtotal = r.coeff * r.mult * r.posDiscount;
+    total += r.subtotal;
+  }
+  return { rows: ranked, total };
+}
+function computeTextScore(testi, sg){
+  const withData = testi.map(el => {
+    const chars = (el.content || '').replace(/\s/g, '').length;
+    const coeffBase = FONT_COEFF[el.fontId] || 0;
+    return { el, chars, coeffBase };
+  });
+  const totChars = withData.reduce((s,b) => s + b.chars, 0);
+  const weightedAvg = (sg.s2 && totChars > 0)
+    ? withData.reduce((s,b) => s + b.chars * b.coeffBase, 0) / totChars
+    : null;
+  let total = 0;
+  const rows = withData.map(b => {
+    const coeffEff = (sg.s2 && weightedAvg !== null)
+      ? weightedAvg + (b.coeffBase - weightedAvg) * 0.4
+      : b.coeffBase;
+    const mult = priceSizeMultAttenuated(b.el.size, PRICE_TEXT_SIZE_DEFAULT, sg.s1);
+    const subtotal = b.chars * coeffEff * mult;
+    total += subtotal;
+    return { ...b, coeffEff, mult, subtotal };
+  });
+  return { rows, total, weightedAvg };
+}
+function computeTagPrice(){
+  const placedEls = state.elements.filter(e => e.placed);
+  const icone = placedEls.filter(e => e.type === 'icon');
+  const testi = placedEls.filter(e => e.type === 'text');
+  const sg = evaluateSoglie(icone, testi);
+  const iconScore = computeIconScore(icone, sg);
+  const textScore = computeTextScore(testi, sg);
+  const totale = iconScore.total + textScore.total;
+  const s5 = totale >= SOGLIA5_TETTO;
+  const price = s5 ? SOGLIA5_PREZZO : (1 + totale * 0.004);
+  return { sg, iconScore, textScore, totale, s5, price };
+}
+
+let priceWidgetOpen = false;
+function fmtPrice(n){ return n.toFixed(2).replace('.', ',') + ' €'; }
+function updatePriceWidget(){
+  const box = document.getElementById('priceWidget');
+  if(!box) return;
+  const { sg, totale, s5, price } = computeTagPrice();
+
+  const soglieDefs = [
+    { on: true, always: true, txt: `<b>Soglia base</b> — sempre attiva` },
+    { on: sg.s1, txt: `<b>Soglia 1</b> — attenua l'effetto della dimensione (attiva da 3 elementi misti)` },
+    { on: sg.s2, txt: `<b>Soglia 2</b> — comprime i font verso la media (attiva da 3 blocchi di testo)` },
+    { on: sg.s3, txt: `<b>Soglia 3</b> — sconto sulle icone oltre le prime 2 (attiva da 5 icone)` },
+    { on: sg.s4, txt: `<b>Soglia 4</b> — sconto graduale per rank (attiva da 10 icone)` },
+    { on: s5, txt: `<b>Soglia 5</b> — prezzo fisso ${fmtPrice(SOGLIA5_PREZZO)} oltre ${SOGLIA5_TETTO} pt` }
+  ];
+
+  box.innerHTML = `
+    <div class="price-panel ${priceWidgetOpen ? 'open' : ''}" id="pricePanel">
+      <h4>Soglie attive</h4>
+      ${soglieDefs.map(s => `
+        <div class="price-soglia ${s.on ? 'on' : ''}">
+          <span class="dot"></span>
+          <span class="label">${s.txt}</span>
+        </div>
+      `).join('')}
+      <div class="price-breakdown">
+        punteggio totale: ${totale.toFixed(1)}${s5 ? ' (tetto raggiunto)' : ''}<br>
+        ${sg.nIcone} icon${sg.nIcone===1?'a':'e'} · ${sg.nTesti} blocc${sg.nTesti===1?'o':'hi'} di testo
+      </div>
+    </div>
+    <div class="price-badge ${priceWidgetOpen ? 'open' : ''} ${s5 ? 'capped' : ''}" id="priceBadge">
+      <span class="amount">${fmtPrice(price)}</span>
+      <span class="caret">▲</span>
+    </div>
+  `;
+  document.getElementById('priceBadge').addEventListener('click', () => {
+    priceWidgetOpen = !priceWidgetOpen;
+    updatePriceWidget();
+  });
+}
+
+const ICON_COEFF = {"acorn":67,"alien":76,"atom":57,"atom-2":105,"balloon":54,"butterfly":61,"cactus":73,"cannabis":64,"cherry":79,"christmas-tree":67,"cloud":32,"cloud-bolt":51,"cloud-cancel":64,"cloud-check":48,"cloud-code":67,"cloud-cog":143,"cloud-dollar":73,"cloud-down":64,"cloud-exclamation":61,"cloud-fog":35,"cloud-heart":64,"cloud-minus":48,"cloud-pause":61,"cloud-pin":64,"cloud-plus":61,"cloud-question":61,"cloud-rain":51,"cloud-search":61,"cloud-share":64,"cloud-snow":57,"cloud-star":83,"cloud-storm":42,"cloud-up":64,"cloud-x":61,"clover":143,"clover-2":146,"comet":83,"crystal-ball":51,"drop-circle":38,"droplets":89,"feather":76,"flame":26,"flare":29,"flood":121,"flower":130,"growth":45,"haze":117,"iceberg":51,"leaf":42,"leaf-2":54,"leaf-maple":51,"meteor":45,"mist":79,"moon":16,"moon-2":26,"moon-stars":64,"mountain":42,"plant":95,"plant-2":70,"rainbow":42,"ripple":48,"seedling":64,"snowflake":218,"snowman":76,"storm":61,"sun":70,"sun-electricity":114,"sun-high":136,"sun-low":136,"sun-moon":92,"sun-wind":149,"sunrise":73,"sunset":73,"sunset-2":133,"temperature":32,"temperature-celsius":45,"temperature-fahrenheit":48,"temperature-minus":48,"temperature-plus":64,"tornado":70,"uv-index":92,"whirl":86,"wind":48,"wind-electricity":70,"award":61,"badge":23,"badge-2k":121,"badge-3d":92,"badge-3k":117,"badge-4k":117,"badge-5k":114,"badge-8k":143,"badge-ad":98,"badge-ar":98,"badge-cc":73,"badge-hd":108,"badge-sd":108,"badge-tm":86,"badge-vo":76,"badge-vr":79,"badge-wc":76,"badges":54,"bell":51,"cake":89,"candle":45,"confetti":158,"cross":42,"crown":26,"egg":16,"gift":98,"heart":16,"medal":64,"star":35,"trophy":98,"bat":57,"cat":114,"deer":184,"dog":155,"fish":61,"fish-bone":98,"fish-hook":51,"horse":79,"horseshoe":48,"paw":168,"pig":86,"pig-money":102,"spider":143,"bug":155,"bone":35,"cricket":133,"dog-bowl":51,"fish-christianity":16,"horse-toy":67,"border-corner-ios":13,"cancel":26,"capsule":23,"capsule-horizontal":23,"caret-left-right":35,"category":86,"category-2":79,"category-minus":83,"category-plus":89,"circle":10,"circle-asterisk":57,"circle-check":29,"circle-dashed":117,"circle-dashed-check":136,"circle-dashed-minus":133,"circle-dashed-percentage":165,"circle-dashed-plus":149,"circle-dashed-x":149,"circle-dot":29,"circle-dotted":181,"circle-half":26,"circle-half-2":73,"circle-half-vertical":26,"circle-key":64,"circle-minus":26,"circle-minus-2":23,"circle-percentage":57,"circle-plus":42,"circle-plus-2":38,"circle-plus-minus":57,"circle-rectangle":35,"circle-square":48,"circle-triangle":32,"circle-x":32,"circles":48,"circles-relation":23,"clubs":32,"cone":26,"cone-2":26,"cone-plus":54,"cube":89,"cube-plus":114,"cube-spark":108,"cylinder":35,"cylinder-plus":70,"diabolo":86,"diabolo-plus":111,"diamond":42,"diamonds":29,"frustum":79,"frustum-plus":105,"heart-bolt":38,"heart-cancel":48,"heart-check":38,"heart-code":57,"heart-cog":127,"heart-dollar":67,"heart-down":48,"heart-exclamation":48,"heart-minus":35,"heart-pause":54,"heart-pin":51,"heart-plus":45,"heart-question":51,"heart-search":51,"heart-share":57,"heart-spark":38,"heart-star":73,"heart-up":48,"heart-x":54,"hearts":57,"hemisphere":26,"hemisphere-plus":64,"hexagon":45,"hexagon-3d":162,"hexagon-asterisk":92,"hexagon-minus":61,"hexagon-minus-2":54,"hexagon-plus":76,"hexagon-plus-2":70,"hexagonal-prism":114,"hexagonal-prism-plus":136,"hexagonal-pyramid":67,"hexagonal-pyramid-plus":89,"hexagons":76,"icons":89,"irregular-polyhedron":108,"irregular-polyhedron-plus":133,"jewish-star":42,"octagon":54,"octagon-minus":70,"octagon-minus-2":67,"octagon-plus":86,"octagon-plus-2":83,"octahedron":73,"octahedron-plus":114,"oval":10,"oval-vertical":16,"pentagon":35,"pentagon-minus":48,"pentagon-plus":64,"pentagon-x":67,"perspective":29,"prism":73,"prism-plus":98,"pyramid":45,"pyramid-plus":73,"rectangle":29,"rectangle-rounded-bottom":29,"rectangle-rounded-top":29,"rectangle-vertical":29,"rectangular-prism":89,"rectangular-prism-plus":117,"rosette":105,"rosette-asterisk":152,"spade":45,"sphere":29,"sphere-2":48,"sphere-plus":64,"square":29,"square-asterisk":76,"square-check":48,"square-dashed":29,"square-dot":48,"square-forbid":45,"square-forbid-2":45,"square-key":83,"square-minus":45,"square-minus-2":42,"square-percentage":76,"square-plus":61,"square-plus-2":57,"square-rotated":29,"square-rotated-asterisk":76,"square-rotated-forbid":45,"square-rotated-forbid-2":45,"square-rounded":16,"square-rounded-check":35,"square-rounded-minus":32,"square-rounded-minus-2":35,"square-rounded-percentage":64,"square-rounded-plus":48,"square-rounded-plus-2":51,"square-rounded-x":38,"square-x":51,"squares-selected":114,"triangle":23,"triangle-inverted":23,"triangle-minus":42,"triangle-minus-2":35,"triangle-plus":57,"triangle-plus-2":51,"triangle-square-circle":70,"triangles":61,"ovale-h":16,"anchor":45,"ankh":38,"biohazard":76,"ce":38,"command":29,"compass":98,"confucius":61,"copyleft":32,"copyright":32,"flag":38,"infinity":23,"key":95,"lock":70,"magnet":73,"mars":57,"menorah":67,"om":102,"option":19,"parking-circle":38,"peace":57,"puzzle":105,"radioactive":67,"rating-12-plus":83,"rating-14-plus":83,"rating-16-plus":98,"rating-18-plus":95,"rating-21-plus":83,"recycle":114,"registered":51,"ribbon-health":23,"servicemark":45,"sparkles":48,"torii":70,"trademark":38,"venus":42,"aperture":89,"brightness":73,"brightness-2":73,"brightness-auto":92,"brightness-down":136,"brightness-half":73,"brightness-up":136,"brush":61,"camera-rotate":108,"camera-selfie":95,"contrast":29,"contrast-2":54,"device-tv-old":95,"disc":61,"exposure":83,"exposure-0":19,"exposure-minus-1":26,"exposure-minus-2":32,"exposure-plus-1":42,"exposure-plus-2":48,"focus":29,"focus-2":92,"focus-auto":117,"hdr":102,"headphones":89,"image-in-picture":143,"live-photo":250,"macro":92,"mask":48,"microphone":70,"microphone-2":32,"movie":139,"music":67,"palette":83,"panorama-horizontal":32,"panorama-vertical":32,"pencil":35,"photo-bitcoin":124,"photo-circle":76,"photo-hexagon":105,"photo-pentagon":95,"photo-sensor":117,"photo-sensor-2":67,"photo-sensor-3":162,"photo-square-rounded":76,"photo-video":124,"piano":105,"polaroid":105,"screenshot":133,"shadow":89,"tilt-shift":136,"vinyl":64};
+const FONT_COEFF = {"mono":10.5,"cond":10.53,"sans":10.65,"block":10.86,"urban":10.95,"rounded2":11.4,"round":11.49,"comic":11.52,"rounded3":11.7,"serif":12.12,"typewriter":12.15,"gothic2":12.27,"monument":12.39,"gothic":13.02,"script":13.35,"script2":13.65,"script3":14.01,"hand":14.04,"western2":14.67,"marker":16.2,"western":16.35,"typewriter2":24};
+
 const FONT_FILE_URLS = {
   sans: 'https://fonts.gstatic.com/s/inter/v20/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuGKYMZg.ttf',
   script: 'https://fonts.gstatic.com/s/greatvibes/v21/RWmMoKWR9v4ksMfaWd_JN-XC.ttf',
@@ -1201,6 +1366,7 @@ function renderTag(){
   attachDragHandlers();
   document.getElementById('readoutShape').innerHTML = `FORMA <b>${SHAPES[state.shape].label.toUpperCase()}</b>`;
   updateBoundsWarning();
+  updatePriceWidget();
 }
 function updateBoundsWarning(){
   const banner = document.getElementById('boundsWarning');
@@ -1249,14 +1415,31 @@ function elementSVG(el, interactive=true){
     </g>`;
   }
   const font = fontById(el.fontId);
-  const blk = estimateTextBlockSize(el.content, el.size, font.id);
+  const blk = estimateTextBlockSize(el.content, el.size, font.id, el.curve);
   const isFull = el.fill!=='contorno';
   const fillAttrs = isFull ? `fill="#221f1a"` : `fill="none" stroke="#221f1a" stroke-width="1"`;
   const hw = blk.width/2+8, hh = blk.height/2+8;
   const chromeFilled = chrome.replaceAll('{{HW}}',-hw).replaceAll('{{HH}}',-hh).replaceAll('{{HW2}}',hw*2).replaceAll('{{HH2}}',hh*2).replaceAll('{{HHOUT}}',-hh-16).replaceAll('{{HWOUT}}',hw-6).replaceAll('{{HHOUT2}}',hh-6);
+  const textInner = el.curve
+    ? `<g class="curve-text-inner">${curvedTextChars(el, font, fillAttrs)}</g>`
+    : `<text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text>`;
   return `<g class="drag-el${sel}${warnCls}" data-id="${el.id}" transform="translate(${el.x},${el.y}) rotate(${rot})">${chromeFilled}
-    <text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs}>${textTspans(el.content, el.size)}</text>
+    ${textInner}
   </g>`;
+}
+// Testo curvo per il canvas interattivo: un <text> per carattere, posizionato/ruotato
+// via curveCharLayout(). Usa i font nativi del browser (non i contorni opentype.js) per
+// restare leggero durante il drag dello slider — la precisione vettoriale vera arriva
+// solo in fase di export, dove serve davvero.
+function curvedTextChars(el, font, fillAttrs){
+  const text = String(el.content).replace(/\n/g,' ') || ' ';
+  const chars = Array.from(text);
+  const advances = chars.map(ch=>rawCharWidth(ch, el.size, font.id));
+  const layout = curveCharLayout(advances, el.curve);
+  return chars.map((ch,i)=>{
+    const l = layout[i];
+    return `<text x="0" y="0" text-anchor="middle" font-size="${el.size}" font-family="${font.family}" font-weight="${font.weight}" ${fillAttrs} transform="translate(${l.px.toFixed(2)},${l.py.toFixed(2)}) rotate(${l.angleDeg.toFixed(2)})">${escapeXML(ch===' '?'\u00A0':ch)}</text>`;
+  }).join('');
 }
 function estimateTextWidth(str, size, fontId){
   const realFont = fontFileCache[fontId];
@@ -1269,10 +1452,65 @@ function estimateTextWidth(str, size, fontId){
   const factor = (fontId==='script'||fontId==='hand'||fontId==='marker') ? 0.42 : (fontId==='mono'||fontId==='monument') ? 0.62 : 0.56;
   return Math.max(20, str.length * size * factor);
 }
+// Come estimateTextWidth ma per UN singolo carattere, senza il floor di 20 unità
+// (pensato per stringhe intere, non per un glifo isolato dentro al testo curvo).
+function rawCharWidth(ch, size, fontId){
+  const realFont = fontFileCache[fontId];
+  if(realFont){
+    try{ return Math.max(2, realFont.charToGlyph(ch).advanceWidth * (1/realFont.unitsPerEm*size)); }
+    catch(e){ /* fallback sotto */ }
+  } else {
+    ensureFontLoaded(fontId);
+  }
+  const factor = (fontId==='script'||fontId==='hand'||fontId==='marker') ? 0.42 : (fontId==='mono'||fontId==='monument') ? 0.62 : 0.56;
+  return Math.max(2, size * factor);
+}
+// Curvatura testo — matematica condivisa fra editing interattivo (glifi nativi del
+// browser) ed export (contorni vettoriali via opentype.js): entrambi i punti chiamano
+// questa funzione per garantire che quel che si vede sul canvas sia quel che esce dal
+// laser. curve va da -100 (arco verso il basso, "a coppa") a 100 (arco verso l'alto,
+// "a cappello"); 0 resta testo dritto su riga singola.
+// Ogni carattere viene ruotato/spostato attorno al proprio centro (non al bordo
+// sinistro), così l'arco resta uniforme indipendentemente da quanto è largo ciascun
+// glifo — lo stesso principio di kerning-aware centering già usato per il testo dritto.
+function curveCharLayout(advances, curve){
+  const totalWidth = advances.reduce((s,a)=>s+a,0) || 1;
+  const angleSpanRad = Math.max(-3.05, Math.min(3.05, (curve/100) * Math.PI));
+  const absSpan = Math.abs(angleSpanRad);
+  const flat = absSpan < 0.002;
+  const R = flat ? 0 : totalWidth/absSpan;
+  const sign = curve < 0 ? -1 : 1;
+  let cum = 0;
+  return advances.map(adv=>{
+    const center = cum + adv/2; cum += adv;
+    const t = center - totalWidth/2;
+    if(flat) return { px:t, py:0, angleDeg:0 };
+    const theta = (t/totalWidth) * absSpan;
+    return {
+      px: R*Math.sin(theta),
+      py: sign * R * (1-Math.cos(theta)),
+      angleDeg: sign * theta * 180/Math.PI
+    };
+  });
+}
+// Ingombro approssimato del testo curvo (per box di selezione e controllo limiti):
+// non serve pixel-perfect, il ritaglio vettoriale vero all'export usa i contorni reali.
+function estimateCurvedTextGeometry(content, size, fontId, curve){
+  const text = String(content).replace(/\n/g,' ') || ' ';
+  const chars = Array.from(text);
+  const advances = chars.map(ch=>rawCharWidth(ch, size, fontId));
+  const layout = curveCharLayout(advances, curve);
+  const xs = layout.map(l=>l.px), ys = layout.map(l=>l.py);
+  const pad = size*0.65;
+  const width = (Math.max(...xs) - Math.min(...xs)) + pad*2;
+  const height = (Math.max(...ys) - Math.min(...ys)) + size*1.3;
+  return { width, height, chars, advances, layout };
+}
 function textLines(content){
   return String(content).split('\n');
 }
-function estimateTextBlockSize(content, size, fontId){
+function estimateTextBlockSize(content, size, fontId, curve){
+  if(curve){ const g = estimateCurvedTextGeometry(content, size, fontId, curve); return { width:g.width, height:g.height }; }
   const lines = textLines(content);
   const widths = lines.map(l => estimateTextWidth(l.length?l:' ', size, fontId));
   return { width: Math.max(...widths), height: size*1.18*lines.length };
@@ -1309,9 +1547,22 @@ function applyElementGeometry(g, el){
     updateBoxAndHandles(g, sz/2+6, sz/2+6);
   } else {
     const font = fontById(el.fontId);
-    const blk = estimateTextBlockSize(el.content, el.size, font.id);
-    const text = g.querySelector('text');
-    if(text){ text.setAttribute('font-size', el.size); text.innerHTML = textTspans(el.content, el.size); }
+    const blk = estimateTextBlockSize(el.content, el.size, font.id, el.curve);
+    if(el.curve){
+      const isFull = el.fill!=='contorno';
+      const fillAttrs = isFull ? `fill="#221f1a"` : `fill="none" stroke="#221f1a" stroke-width="1"`;
+      let inner = g.querySelector('.curve-text-inner');
+      const plainText = g.querySelector(':scope > text');
+      if(plainText) plainText.remove();
+      if(!inner){ inner = document.createElementNS('http://www.w3.org/2000/svg','g'); inner.setAttribute('class','curve-text-inner'); g.appendChild(inner); }
+      inner.innerHTML = curvedTextChars(el, font, fillAttrs);
+    } else {
+      const inner = g.querySelector('.curve-text-inner');
+      if(inner) inner.remove();
+      let text = g.querySelector(':scope > text');
+      if(!text){ text = document.createElementNS('http://www.w3.org/2000/svg','text'); text.setAttribute('x','0'); text.setAttribute('y','0'); text.setAttribute('text-anchor','middle'); g.appendChild(text); }
+      text.setAttribute('font-size', el.size); text.innerHTML = textTspans(el.content, el.size);
+    }
     updateBoxAndHandles(g, blk.width/2+8, blk.height/2+8);
   }
 }
@@ -1599,7 +1850,7 @@ function renderControlBar(){
       const val = input.value.replace(/\n+$/,'');
       if(!val.trim()) return;
       const id = 'el'+(state.nextId++);
-      state.elements.push({ id, type:'text', content:val, x:170, y:170, size:21, fontId:'sans', fill:'pieno', rotation:0, placed:false });
+      state.elements.push({ id, type:'text', content:val, x:170, y:170, size:21, fontId:'sans', fill:'pieno', rotation:0, curve:0, placed:false });
       state.selectedId = id;
       input.value='';
       input.style.height='auto';
@@ -1752,6 +2003,14 @@ function satelliteHTML(el){
       <div class="sat-row">
         <div class="sat-size"><button data-act="dec">−</button><span>${el.size}</span><button data-act="inc">+</button></div>
       </div>
+      <div class="sat-curve">
+        <div class="sat-curve-head">
+          <span class="sat-curve-label">Curvatura</span>
+          <span class="sat-curve-val">${el.curve||0}</span>
+          <span class="sat-curve-reset">dritto</span>
+        </div>
+        <input type="range" class="sat-curve-slider" min="-100" max="100" step="1" value="${el.curve||0}">
+      </div>
       <div class="sat-align">
         <button data-align="h" ${el.placed?'':'disabled'} title="Centra orizzontalmente sulla tag">↔ Centra H</button>
         <button data-align="v" ${el.placed?'':'disabled'} title="Centra verticalmente sulla tag">↕ Centra V</button>
@@ -1782,6 +2041,23 @@ function bindSatelliteEvents(item, el){
       renderOrbit();
     });
   });
+  const curveSlider = item.querySelector('.sat-curve-slider');
+  if(curveSlider){
+    const curveVal = item.querySelector('.sat-curve-val');
+    curveSlider.addEventListener('input', ()=>{
+      el.curve = parseInt(curveSlider.value, 10);
+      if(curveVal) curveVal.textContent = el.curve;
+      renderTag();
+    });
+    curveSlider.addEventListener('change', ()=>{ renderOrbit(); });
+    const curveReset = item.querySelector('.sat-curve-reset');
+    if(curveReset) curveReset.addEventListener('click', ()=>{
+      el.curve = 0;
+      curveSlider.value = 0;
+      if(curveVal) curveVal.textContent = '0';
+      renderOrbit();
+    });
+  }
   item.querySelectorAll('.sat-align button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       if(!el.placed) return;
@@ -1913,6 +2189,7 @@ function renderCompletionView(){
       <circle cx="${SHAPE_HOLE[state.shape].x}" cy="${SHAPE_HOLE[state.shape].holeY}" r="8.4" fill="#161512" stroke="#3a3833" stroke-width="1.5"/>
     ` : ''}
   </svg>`;
+  updatePriceWidget();
 }
 
 const STORAGE_KEY = 'dial-tag-autosave';
@@ -2421,27 +2698,55 @@ async function buildExportSVGString(){
       const toGlobal = (x,y) => ({ x: (x*cosR - y*sinR) + el.x, y: (x*sinR + y*cosR) + el.y });
       try{
         const realFont = await loadRealFont(el.fontId);
-        const lines = textLines(el.content);
-        const lineHeight = el.size*1.18;
-        const totalH = lineHeight*lines.length;
         const allSubpaths = [];
-        lines.forEach((line, i) => {
-          const txt = line.length?line:' ';
-          let p;
-          try{
-            p = getTextPathSafe(realFont, txt, 0, 0, el.size);
-          } catch(errSafe){
-            p = realFont.getPath(txt, 0, 0, el.size); // ripiego se anche il metodo sicuro fallisce
-          }
-          const bbox = p.getBoundingBox();
-          const cx = (bbox.x1+bbox.x2)/2;
-          const lineY = -totalH/2 + lineHeight/2 + i*lineHeight;
-          for(const sub of flattenGlyphPath(p, 8)){
-            const globalSub = sub.map(pt => toGlobal(pt.x - cx, pt.y + lineY));
-            globalSub.closed = true; // contorni dei font sempre chiusi
-            allSubpaths.push(globalSub);
-          }
-        });
+        if(el.curve){
+          const text = String(el.content).replace(/\n/g,' ') || ' ';
+          const chars = Array.from(text);
+          const advances = chars.map(ch=>{
+            const g = realFont.charToGlyph(ch);
+            return Math.max(2, g.advanceWidth * (1/realFont.unitsPerEm*el.size));
+          });
+          const layout = curveCharLayout(advances, el.curve);
+          chars.forEach((ch,i)=>{
+            let p;
+            try{ p = getTextPathSafe(realFont, ch, 0, 0, el.size); }
+            catch(errSafe){ p = realFont.getPath(ch, 0, 0, el.size); }
+            const bbox = p.getBoundingBox();
+            const cx = Number.isFinite(bbox.x1) ? (bbox.x1+bbox.x2)/2 : 0;
+            const { px, py, angleDeg } = layout[i];
+            const cr = angleDeg*Math.PI/180, cosC = Math.cos(cr), sinC = Math.sin(cr);
+            for(const sub of flattenGlyphPath(p, 8)){
+              const globalSub = sub.map(pt => {
+                const lx = pt.x - cx, ly = pt.y;
+                const rx = lx*cosC - ly*sinC + px, ry = lx*sinC + ly*cosC + py;
+                return toGlobal(rx, ry);
+              });
+              globalSub.closed = true;
+              allSubpaths.push(globalSub);
+            }
+          });
+        } else {
+          const lines = textLines(el.content);
+          const lineHeight = el.size*1.18;
+          const totalH = lineHeight*lines.length;
+          lines.forEach((line, i) => {
+            const txt = line.length?line:' ';
+            let p;
+            try{
+              p = getTextPathSafe(realFont, txt, 0, 0, el.size);
+            } catch(errSafe){
+              p = realFont.getPath(txt, 0, 0, el.size); // ripiego se anche il metodo sicuro fallisce
+            }
+            const bbox = p.getBoundingBox();
+            const cx = (bbox.x1+bbox.x2)/2;
+            const lineY = -totalH/2 + lineHeight/2 + i*lineHeight;
+            for(const sub of flattenGlyphPath(p, 8)){
+              const globalSub = sub.map(pt => toGlobal(pt.x - cx, pt.y + lineY));
+              globalSub.closed = true; // contorni dei font sempre chiusi
+              allSubpaths.push(globalSub);
+            }
+          });
+        }
         marcatura += emitClippedContours(allSubpaths, clipPoly, isFull, fillAttrs);
       } catch(err){
         console.warn('Conversione font in tracciato non riuscita, uso testo con riferimento al font come ripiego (NB: in questo caso il ritaglio geometrico non viene applicato)', err);
