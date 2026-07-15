@@ -1366,8 +1366,8 @@ function attachDragHandlers(){
         const pt = svgPoint(svg, ev);
         const dist = Math.hypot(pt.x-el.x, pt.y-el.y);
         const scale = dist/startDist;
-        const min = el.type==='icon' ? 18 : 16;
-        el.size = Math.max(min, Math.min(90, Math.round(startSize*scale)));
+        const min = el.type==='icon' ? 6 : 5;
+        el.size = Math.max(min, Math.min(68, Math.round(startSize*scale)));
         applyElementGeometry(g, el);
       }
       function onUp(){
@@ -1599,7 +1599,7 @@ function renderControlBar(){
       const val = input.value.replace(/\n+$/,'');
       if(!val.trim()) return;
       const id = 'el'+(state.nextId++);
-      state.elements.push({ id, type:'text', content:val, x:170, y:170, size:34, fontId:'sans', fill:'pieno', rotation:0, placed:false });
+      state.elements.push({ id, type:'text', content:val, x:170, y:170, size:21, fontId:'sans', fill:'pieno', rotation:0, placed:false });
       state.selectedId = id;
       input.value='';
       input.style.height='auto';
@@ -1625,7 +1625,7 @@ function renderControlBar(){
     bar.querySelectorAll('.icon-card').forEach(card=>{
       card.addEventListener('click', ()=>{
         const id = 'el'+(state.nextId++);
-        state.elements.push({ id, type:'icon', iconId:card.dataset.icon, x:170, y:170, size:44, fill:'linea', rotation:0, placed:false });
+        state.elements.push({ id, type:'icon', iconId:card.dataset.icon, x:170, y:170, size:28, fill:'linea', rotation:0, placed:false });
         state.selectedId = id;
         renderOrbit();
       });
@@ -1777,8 +1777,8 @@ function bindSatelliteEvents(item, el){
   item.querySelectorAll('.sat-size button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const delta = btn.dataset.act==='inc' ? 1 : -1;
-      const min = el.type==='icon' ? 18 : 16;
-      el.size = Math.max(min, Math.min(90, el.size+delta));
+      const min = el.type==='icon' ? 6 : 5;
+      el.size = Math.max(min, Math.min(68, el.size+delta));
       renderOrbit();
     });
   });
