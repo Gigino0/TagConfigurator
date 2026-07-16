@@ -1251,7 +1251,16 @@ function updatePriceWidget(){
       try{
         const snapshot = {
           price: fmtPrice(price),
-          desc: `${sg.nIcone} icon${sg.nIcone===1?'a':'e'} · ${sg.nTesti} blocc${sg.nTesti===1?'o':'hi'} di testo`
+          desc: `${sg.nIcone} icon${sg.nIcone===1?'a':'e'} · ${sg.nTesti} blocc${sg.nTesti===1?'o':'hi'} di testo`,
+          nIcone: sg.nIcone,
+          nTesti: sg.nTesti,
+          totElementi: sg.totElementi,
+          totale: totale,
+          s1: sg.s1,
+          s2: sg.s2,
+          s3: sg.s3,
+          s4: sg.s4,
+          s5: s5
         };
         localStorage.setItem('dialTagPriceSnapshot', JSON.stringify(snapshot));
       }catch(err){}
