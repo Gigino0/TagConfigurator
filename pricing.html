@@ -6,7 +6,7 @@
 <title>Come nasce il prezzo — Dial Tag</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Caveat:wght@500;700&family=Bangers&family=Monoton&family=Fraunces:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&family=Caveat:wght@500;700&family=Bangers&family=Monoton&family=Fraunces:ital,wght@0,500;0,700;1,500&family=Special+Elite&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
 <style>
 :root{
   --board:#2b2722; --board-2:#332e27; --hole:rgba(0,0,0,0.35);
@@ -19,10 +19,8 @@
 html{ scroll-behavior:smooth; }
 body{
   margin:0; background:var(--board); color:var(--text-1); font-family:var(--font-body);
-  background-image:
-    radial-gradient(var(--hole) 1.4px, transparent 1.4px);
-  background-size:26px 26px;
-  background-position:13px 13px;
+  background-image: radial-gradient(var(--hole) 1.4px, transparent 1.4px);
+  background-size:26px 26px; background-position:13px 13px;
   -webkit-font-smoothing:antialiased;
 }
 body::before{
@@ -34,15 +32,14 @@ body::before{
 /* ---------- HERO ---------- */
 .hero{ padding:70px 0 40px; text-align:center; }
 .eyebrow{ font-family:var(--font-mono); font-size:11.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--chalk); margin-bottom:16px; }
-.hero h1{ font-family:var(--font-frame); font-weight:400; font-size:clamp(32px,5.4vw,58px); line-height:1.05; letter-spacing:0.005em; margin:0 auto 22px; max-width:820px; text-transform:uppercase; color:var(--text-1); }
+.hero h1{ font-family:var(--font-frame); font-weight:400; font-size:clamp(30px,4.6vw,52px); line-height:1.1; letter-spacing:0.005em; margin:0 auto 22px; max-width:760px; text-transform:uppercase; color:var(--text-1); }
 .hero h1 em{ font-style:normal; color:var(--chalk); }
 .hero p{ font-size:16px; line-height:1.65; color:var(--text-2); max-width:560px; margin:0 auto; }
 
 .ticket{
   margin:38px auto 0; max-width:400px; background:var(--paper); color:var(--ink);
   padding:20px 24px 22px; position:relative; box-shadow:0 14px 32px rgba(0,0,0,0.45);
-  transform:rotate(-1.2deg);
-  font-family:var(--font-mono);
+  transform:rotate(-1.2deg); font-family:var(--font-mono);
 }
 .ticket::after{
   content:''; position:absolute; top:-14px; left:50%; transform:translateX(-50%) rotate(-1.2deg);
@@ -52,98 +49,195 @@ body::before{
 .ticket .tprice{ font-family:var(--font-frame); font-size:40px; text-transform:none; line-height:1; margin:2px 0 10px; }
 .ticket .trow{ display:flex; justify-content:space-between; font-size:12px; border-top:1px dashed #b9b19c; padding-top:8px; color:#4a4638; }
 
-/* ---------- GRID ---------- */
-.grid{ display:grid; grid-template-columns:1fr 1fr; gap:34px; margin-top:20px; }
-@media (max-width:820px){ .grid{ grid-template-columns:1fr; } }
+/* ---------- GRID (a colonna unica, box larghi) ---------- */
+.grid{ display:flex; flex-direction:column; gap:26px; margin-top:24px; }
 
-.specimen{ position:relative; border-radius:3px; overflow:hidden; min-height:380px; box-shadow:0 18px 40px rgba(0,0,0,0.45); display:flex; flex-direction:column; }
-.specimen-inner{ flex:1; display:flex; flex-direction:column; padding:30px 28px 26px; position:relative; z-index:1; }
+.specimen{ position:relative; border-radius:3px; overflow:hidden; box-shadow:0 18px 40px rgba(0,0,0,0.45); }
+.specimen-inner{ display:flex; flex-direction:row; align-items:stretch; gap:36px; padding:32px 34px; min-height:236px; position:relative; z-index:1; }
+.specimen-text{ flex:0 0 34%; display:flex; flex-direction:column; justify-content:center; }
+.specimen-demo{ flex:1; display:flex; flex-direction:column; justify-content:center; min-width:0; }
 .specimen .eyebrow{ margin-bottom:10px; }
-.specimen h2{ margin:0 0 12px; font-size:24px; line-height:1.15; }
-.specimen p.desc{ font-size:14px; line-height:1.6; margin:0 0 22px; }
-.specimen .demo{ margin-top:auto; }
+.specimen h2{ margin:0 0 12px; font-size:23px; line-height:1.18; }
+.specimen p.desc{ font-size:14px; line-height:1.6; margin:0; }
 .pin{ position:absolute; top:-11px; left:50%; transform:translateX(-50%); z-index:2; }
+@media (max-width:760px){
+  .specimen-inner{ flex-direction:column; padding:26px 24px; }
+  .specimen-text{ flex:none; }
+}
 
-/* === 1. BASE — quaderno a matita === */
-.specimen--sketch{ background:#f3ecda; color:#2a2620; transform:rotate(-0.6deg); }
+/* === 0. IL REGISTRO — spiegazione + tabelle coefficienti === */
+.specimen--ledger{ background:#ece3c8; color:#2c2415; background-image:repeating-linear-gradient(180deg, transparent, transparent 27px, rgba(44,36,21,0.08) 28px); }
+.specimen--ledger::before{ content:''; position:absolute; top:0; bottom:0; left:52px; width:1.5px; background:rgba(154,43,32,0.35); }
+.specimen--ledger .specimen-inner{ flex-direction:column; align-items:stretch; gap:18px; padding-left:74px; }
+.specimen--ledger .eyebrow{ color:#9a2b20; }
+.specimen--ledger h2{ font-family:'Special Elite', monospace; font-weight:400; font-size:22px; color:#2c2415; }
+.specimen--ledger p.desc{ font-size:13.5px; line-height:1.65; max-width:640px; }
+.ledger-flow{ display:flex; align-items:center; flex-wrap:wrap; gap:8px 4px; font-family:'Courier Prime', monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.03em; margin:2px 0 4px; }
+.ledger-flow span.step{ background:rgba(154,43,32,0.08); border:1px solid rgba(44,36,21,0.25); border-radius:3px; padding:5px 10px; }
+.ledger-flow span.arrow{ color:#9a2b20; font-weight:700; }
+.ledger-tables{ display:flex; gap:22px; flex-wrap:wrap; }
+.ledger-table-block{ flex:1; min-width:240px; }
+.ledger-table-title{ font-family:'Courier Prime', monospace; font-weight:700; font-size:10.5px; text-transform:uppercase; letter-spacing:0.05em; color:#9a2b20; margin-bottom:6px; }
+.ledger-scroll{ height:230px; overflow-y:auto; border:1px solid rgba(44,36,21,0.3); background:rgba(255,255,255,0.35); }
+.ledger-scroll table{ width:100%; border-collapse:collapse; font-family:'Courier Prime', monospace; font-size:11px; }
+.ledger-scroll td{ padding:4px 10px; border-bottom:1px solid rgba(44,36,21,0.12); }
+.ledger-scroll td:last-child{ text-align:right; font-weight:700; width:56px; }
+.ledger-scroll tr:hover{ background:rgba(154,43,32,0.08); }
+.ledger-note{ font-family:'Courier Prime', monospace; font-size:10px; color:#6b6045; margin-top:2px; }
+/* ---------- meccanismo di flip (retro del post-it) ---------- */
+.specimen.flip-card{ perspective:1400px; height:380px; }
+.flip-inner{ position:absolute; inset:0; transition:transform .7s cubic-bezier(.4,.1,.2,1); transform-style:preserve-3d; }
+.specimen.flipped .flip-inner{ transform:rotateY(180deg); }
+.flip-face{ position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; display:flex; flex-direction:column; }
+.flip-face.flip-back{ transform:rotateY(180deg); }
+.flip-face .specimen-inner{ flex:1; min-height:0; }
+.flip-btn{ font-family:var(--font-mono); font-size:10px; text-transform:uppercase; letter-spacing:0.05em; background:rgba(0,0,0,0.06); border:1px solid rgba(0,0,0,0.22); color:inherit; border-radius:3px; padding:7px 12px; cursor:pointer; align-self:flex-end; margin:0 20px 16px auto; flex-shrink:0; }
+.specimen--sketch .flip-btn{ color:#2a2620; }
+.specimen--blueprint .flip-btn{ color:#dceaf5; background:rgba(255,255,255,0.08); border-color:rgba(255,255,255,0.35); }
+.specimen--editorial .flip-btn{ color:#1c1a17; }
+.specimen--comics .flip-btn{ color:#1a1a1a; background:rgba(0,0,0,0.1); }
+.specimen--neon .flip-btn{ color:#4be8ff; background:rgba(75,232,255,0.08); border-color:rgba(75,232,255,0.4); }
+.specimen--nature .flip-btn{ color:#25361f; }
+.flip-back-inner{ flex:1; min-height:0; overflow-y:auto; padding:26px 30px 6px; }
+.flip-back-inner .eyebrow{ margin-bottom:8px; }
+.flip-req-title{ font-size:15px; font-weight:600; margin:0 0 8px; }
+.specimen--sketch .flip-req-title{ font-family:'Caveat', cursive; font-weight:700; font-size:22px; }
+.card0-back-inner{ display:flex; flex-direction:row; align-items:center; gap:16px; }
+.card0-back-text{ flex:1; min-width:0; }
+.card0-name-scene{ position:relative; width:150px; height:118px; flex-shrink:0; }
+.card0-name-scene .name-circle{ position:absolute; inset:0; width:100%; height:100%; }
+.name-reveal-wrap{ position:absolute; top:44px; left:0; overflow:hidden; width:0px; white-space:nowrap; }
+.name-text{ font-family:'Caveat', cursive; font-weight:700; font-size:21px; color:#3a2f1c; }
+.name-pencil{ position:absolute; top:38px; left:0; width:22px; height:11px; }
+.name-pencil svg{ width:100%; height:100%; overflow:visible; }
+.specimen--blueprint .flip-req-title{ font-family:'JetBrains Mono', monospace; font-weight:700; text-transform:uppercase; font-size:14px; letter-spacing:0.01em; }
+.specimen--editorial .flip-req-title{ font-family:'Playfair Display', serif; font-weight:700; font-size:18px; }
+.specimen--comics .flip-req-title{ font-family:'Bangers', cursive; font-weight:400; font-size:22px; letter-spacing:0.02em; }
+.specimen--neon .flip-req-title{ font-family:'Monoton', cursive; font-weight:400; font-size:16px; color:#4be8ff; text-shadow:0 0 6px #4be8ff88; }
+.specimen--nature .flip-req-title{ font-family:'Fraunces', serif; font-weight:700; font-style:italic; font-size:18px; }
+.flip-req-text{ font-size:13px; line-height:1.55; margin:0 0 16px; opacity:0.9; }
+.flip-status{ font-size:12.5px; }
+.flip-tagstats{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.03em; opacity:0.75; margin-bottom:8px; }
+.flip-result{ display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:13px; padding:6px 12px; border-radius:20px; }
+.flip-result.yes{ background:rgba(70,160,90,0.18); color:#2e7d42; }
+.flip-result.no{ background:rgba(0,0,0,0.08); opacity:0.7; }
+.flip-placeholder{ font-size:12.5px; opacity:0.7; margin-bottom:10px; }
+.flip-cta{ display:inline-block; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.05em; padding:9px 16px; border-radius:20px; text-decoration:none; background:rgba(0,0,0,0.85); color:#fff; }
+.specimen--blueprint .flip-result.no, .specimen--neon .flip-result.no{ background:rgba(255,255,255,0.12); color:inherit; }
+.specimen--blueprint .flip-cta, .specimen--neon .flip-cta{ background:rgba(255,255,255,0.9); color:#111; }
+
+.specimen--sketch{ background:#f3ecda; color:#2a2620; transform:rotate(-0.4deg); }
 .specimen--sketch .eyebrow{ color:#8a6a3a; }
 .specimen--sketch h2{ font-family:'Caveat', cursive; font-weight:700; font-size:34px; color:#3a2f1c; }
 .specimen--sketch p.desc{ color:#54492f; font-family:var(--font-body); }
 .specimen--sketch .pin{ width:20px; height:20px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #e8967a, #b5432a 70%); box-shadow:0 3px 5px rgba(0,0,0,0.4); }
-.sketch-tag{ width:100%; }
+.sketch-demo{ display:flex; flex-direction:row; align-items:center; gap:24px; }
+.sketch-tag{ width:100%; max-width:220px; }
 .sketch-tag svg{ width:100%; height:auto; overflow:visible; }
-.sketch-path{ fill:none; stroke:#2a2620; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:600; stroke-dashoffset:600; animation:draw 2.4s ease forwards; }
+.sketch-live{ cursor:pointer; }
+.sketch-static .sketch-path{ stroke-dashoffset:0; animation:none; }
+.sketch-static .sketch-stamp{ opacity:1; animation:none; }
+.sketch-tag.sketch-static{ animation:tagSwing 2.9s ease-in-out infinite; transform-origin:50% 13%; }
+@keyframes tagSwing{ 0%,100%{ transform:rotate(-4deg); } 50%{ transform:rotate(4deg); } }
+.sketch-path{ fill:none; stroke:#2a2620; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1; stroke-dashoffset:1; animation:draw 2.2s ease forwards; }
 @keyframes draw{ to{ stroke-dashoffset:0; } }
-.sketch-stamp{ opacity:0; font-family:'Caveat', cursive; font-weight:700; font-size:26px; fill:#b5432a; animation:stampIn .4s ease 2.2s forwards; transform-origin:center; }
+.sketch-stamp{ opacity:0; font-family:'Caveat', cursive; font-weight:700; font-size:26px; fill:#b5432a; animation:stampIn .4s ease 2s forwards; transform-origin:center; }
 @keyframes stampIn{ from{ opacity:0; transform:scale(1.6) rotate(-8deg);} to{ opacity:1; transform:scale(1) rotate(-8deg);} }
+.sketch-col{ display:flex; flex-direction:column; align-items:center; gap:8px; }
+.sketch-caption{ font-family:var(--font-mono); font-size:9.5px; text-transform:uppercase; letter-spacing:0.05em; color:#8a6a3a; }
 
 /* === 2. SOGLIA 1 — blueprint === */
 .specimen--blueprint{ background:#0e3554; color:#dceaf5; }
+.specimen--blueprint::after{ content:''; position:absolute; top:-60%; left:-20%; width:46px; height:220%; background:linear-gradient(90deg, transparent, rgba(127,196,232,0.4), transparent); transform:rotate(18deg); animation:bpScan 4s linear infinite; pointer-events:none; }
+@keyframes bpScan{ 0%{ left:-20%; } 55%{ left:115%; } 100%{ left:115%; } }
 .specimen--blueprint::before{ content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size:22px 22px; }
 .specimen--blueprint .eyebrow{ color:#7fc4e8; }
-.specimen--blueprint h2{ font-family:var(--font-mono); font-weight:700; font-size:21px; text-transform:uppercase; letter-spacing:0.01em; }
+.specimen--blueprint h2{ font-family:var(--font-mono); font-weight:700; font-size:20px; text-transform:uppercase; letter-spacing:0.01em; }
 .specimen--blueprint p.desc{ color:#a9c8dc; font-family:var(--font-mono); font-size:12.5px; }
 .specimen--blueprint .pin{ width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-bottom:16px solid #dceaf5; }
-.bp-row{ display:flex; align-items:center; gap:14px; }
-.bp-icon{ font-size:34px; transition:transform .25s ease; }
-.bp-slider{ flex:1; }
-.bp-slider input[type=range]{ width:100%; accent-color:#7fc4e8; }
-.bp-bars{ margin-top:16px; display:flex; flex-direction:column; gap:8px; font-family:var(--font-mono); font-size:10.5px; }
-.bp-bar-label{ display:flex; justify-content:space-between; margin-bottom:3px; color:#8fb4cc; text-transform:uppercase; letter-spacing:0.05em; }
-.bp-bar-track{ height:7px; background:rgba(255,255,255,0.1); position:relative; border:1px solid rgba(255,255,255,0.25); }
-.bp-bar-fill{ height:100%; background:#7fc4e8; transition:width .2s ease; }
-.bp-bar-fill.dim{ background:#dceaf5; opacity:0.55; }
+.bp-demo{ display:flex; flex-direction:row; align-items:center; gap:40px; }
+.bp-stage{ position:relative; width:140px; height:140px; flex-shrink:0; border:1px dashed rgba(255,255,255,0.25); }
+.bp-shape{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(45deg); background:#7fc4e8; box-shadow:0 0 14px rgba(127,196,232,0.5); }
+.bp-handle{ position:absolute; width:14px; height:14px; background:#dceaf5; border:2px solid #0e3554; border-radius:50%; cursor:nwse-resize; touch-action:none; }
+.bp-stage-label{ position:absolute; bottom:-20px; left:0; right:0; text-align:center; font-family:var(--font-mono); font-size:9.5px; color:#7fa0b8; text-transform:uppercase; letter-spacing:0.05em; }
+.bp-vbars{ display:flex; align-items:flex-end; gap:30px; height:150px; font-family:var(--font-mono); font-size:10.5px; }
+.bp-vbar-col{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+.bp-vbar-val{ color:#dceaf5; font-weight:700; }
+.bp-vbar-track{ width:20px; height:96px; background:rgba(255,255,255,0.1); position:relative; border:1px solid rgba(255,255,255,0.25); }
+.bp-vbar-fill{ position:absolute; bottom:0; left:0; right:0; background:#7fc4e8; transition:height .1s linear; }
+.bp-vbar-fill.dim{ background:#dceaf5; opacity:0.55; }
+.bp-vbar-label{ color:#8fb4cc; text-transform:uppercase; letter-spacing:0.04em; text-align:center; line-height:1.3; }
 
 /* === 3. SOGLIA 2 — editoriale === */
 .specimen--editorial{ background:#f6f4ee; color:#1c1a17; }
+.ed-pencil{ position:absolute; left:16px; bottom:12px; width:60px; height:34px; pointer-events:none; }
+.ed-pencil-icon{ animation:pencilRoll 2.2s ease-in-out infinite alternate; transform-origin:13px 23px; }
+@keyframes pencilRoll{ 0%{ transform:translateX(0) rotate(0deg); } 100%{ transform:translateX(30px) rotate(560deg); } }
 .specimen--editorial .eyebrow{ color:#9a2b20; }
-.specimen--editorial h2{ font-family:'Playfair Display', serif; font-weight:700; font-size:27px; color:#1c1a17; }
+.specimen--editorial h2{ font-family:'Playfair Display', serif; font-weight:700; font-size:26px; color:#1c1a17; }
 .specimen--editorial p.desc{ color:#4d483f; }
 .specimen--editorial .pin{ width:26px; height:10px; background:#d8cba8; opacity:0.85; box-shadow:0 2px 4px rgba(0,0,0,0.25); }
-.ed-samples{ display:flex; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
-.ed-chip{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; border:1px solid #c8c0ab; padding:6px 11px; cursor:pointer; background:#fff; color:#4d483f; border-radius:2px; }
-.ed-chip.active{ border-color:#9a2b20; color:#9a2b20; }
-.ed-line{ position:relative; height:46px; }
+.ed-demo{ display:flex; flex-direction:column; gap:18px; }
+.ed-phrase{ font-size:26px; line-height:1.3; min-height:70px; display:flex; flex-wrap:wrap; align-items:baseline; gap:8px 10px; }
+.ed-word{ transition:font-family .05s, font-style .2s ease; }
+.ed-buttons{ display:flex; gap:10px; }
+.ed-chip{ font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.04em; border:1px solid #c8c0ab; padding:8px 13px; cursor:pointer; background:#fff; color:#4d483f; border-radius:2px; }
+.ed-chip:hover{ border-color:#9a2b20; color:#9a2b20; }
+.ed-line{ position:relative; height:44px; margin-top:4px; }
 .ed-track{ position:absolute; left:0; right:0; top:50%; height:1px; background:#c8c0ab; }
 .ed-dot{ position:absolute; top:50%; width:12px; height:12px; border-radius:50%; background:#9a2b20; transform:translate(-50%,-50%); transition:left .35s ease; }
 .ed-dot-label{ position:absolute; top:-20px; font-size:9.5px; font-family:var(--font-mono); color:#8a8270; transform:translateX(-50%); white-space:nowrap; }
 
 /* === 4. SOGLIA 3 — comics === */
 .specimen--comics{ background:#fce23c; color:#1a1a1a; background-image:radial-gradient(#00000022 1.5px, transparent 1.5px); background-size:11px 11px; }
-.specimen--comics .eyebrow{ color:#c5271a; -webkit-text-stroke:0; }
-.specimen--comics h2{ font-family:'Bangers', cursive; font-size:34px; letter-spacing:0.02em; color:#1a1a1a; -webkit-text-stroke:1px #1a1a1a; }
+.cx-sparkle{ position:absolute; width:14px; height:14px; background:#fff; clip-path:polygon(50% 0%,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0% 50%,39% 39%); opacity:0; animation:cxTwinkle 2s ease-in-out infinite; pointer-events:none; z-index:0; }
+@keyframes cxTwinkle{ 0%,100%{ opacity:0; transform:scale(0.4) rotate(0deg); } 50%{ opacity:0.9; transform:scale(1) rotate(20deg); } }
+.specimen--comics .eyebrow{ color:#c5271a; }
+.specimen--comics h2{ font-family:'Bangers', cursive; font-size:32px; letter-spacing:0.03em; color:#1a1a1a; }
 .specimen--comics p.desc{ color:#2a2a2a; font-weight:600; }
 .specimen--comics .pin{ width:0; height:0; border-left:8px solid transparent; border-right:8px solid transparent; border-top:16px solid #c5271a; top:auto; bottom:-11px; }
-.cx-btn{ font-family:'Bangers', cursive; font-size:16px; letter-spacing:0.03em; background:#c5271a; color:#fce23c; border:3px solid #1a1a1a; padding:9px 20px; cursor:pointer; border-radius:4px; box-shadow:3px 3px 0 #1a1a1a; }
+.cx-btn{ font-family:'Bangers', cursive; font-size:15px; letter-spacing:0.03em; background:#c5271a; color:#fce23c; border:3px solid #1a1a1a; padding:9px 18px; cursor:pointer; border-radius:4px; box-shadow:3px 3px 0 #1a1a1a; align-self:flex-start; margin-top:22px; }
 .cx-btn:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 #1a1a1a; }
-.cx-row{ display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; min-height:44px; }
-.cx-icon{ font-family:'Bangers', cursive; font-size:12px; padding:6px 10px; border:2px solid #1a1a1a; border-radius:50%; background:#fff; position:relative; animation:pop .25s ease; }
-.cx-icon.full{ background:#fff; color:#1a1a1a; }
-.cx-icon.disc{ background:#4fc3e0; color:#1a1a1a; }
-@keyframes pop{ from{ transform:scale(0) rotate(-15deg); } to{ transform:scale(1) rotate(0deg); } }
+.cx-row{ position:relative; height:190px; }
+.cx-badge{ position:absolute; width:116px; height:92px; animation:pop .22s ease; filter:drop-shadow(0 3px 5px rgba(0,0,0,0.35)); }
+.cx-badge svg{ width:100%; height:100%; display:block; overflow:visible; }
+.cx-badge .cx-shape{ fill:#fff; stroke:#1a1a1a; stroke-width:3.5; stroke-linejoin:round; }
+.cx-badge.disc .cx-shape{ fill:#4fc3e0; }
+.cx-badge .cx-label{ position:absolute; display:flex; align-items:center; justify-content:center; text-align:center; font-family:var(--font-mono); font-weight:700; font-size:9.5px; text-transform:uppercase; letter-spacing:0.01em; color:#1a1a1a; line-height:1.25; }
+.cx-badge.full .cx-label{ top:0; left:0; right:0; bottom:30%; padding:0 16px; }
+.cx-badge.disc .cx-label{ inset:0; padding:0 26px; }
+@keyframes pop{ from{ transform:scale(0) rotate(-25deg); } to{ transform:scale(1); } }
 
 /* === 5. SOGLIA 4 — neon === */
 .specimen--neon{ background:#0a0a0d; color:#fff; }
 .specimen--neon .eyebrow{ color:#ff2fd0; }
-.specimen--neon h2{ font-family:'Monoton', cursive; font-weight:400; font-size:26px; letter-spacing:0.02em; color:#4be8ff; text-shadow:0 0 6px #4be8ff88, 0 0 18px #4be8ff44; }
+.specimen--neon h2{ font-family:'Monoton', cursive; font-weight:400; font-size:23px; letter-spacing:0.02em; color:#4be8ff; text-shadow:0 0 6px #4be8ff88, 0 0 18px #4be8ff44; }
 .specimen--neon p.desc{ color:#c9c4d6; }
 .specimen--neon .pin{ width:3px; height:22px; background:#4be8ff; box-shadow:0 0 8px #4be8ff; }
-.neon-bars{ display:flex; align-items:flex-end; gap:6px; height:100px; }
-.neon-bar{ flex:1; background:linear-gradient(180deg,#ff2fd0,#4be8ff); border-radius:2px 2px 0 0; box-shadow:0 0 10px #ff2fd066; transition:height .3s ease; }
-.neon-toggle{ margin-top:14px; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.06em; background:transparent; border:1px solid #4be8ff; color:#4be8ff; padding:8px 14px; cursor:pointer; border-radius:3px; }
+.neon-demo{ display:flex; flex-direction:row; align-items:flex-end; gap:20px; }
+.neon-bars{ flex:1; display:flex; align-items:flex-end; gap:6px; height:120px; }
+.neon-bar{ flex:1; background:linear-gradient(180deg,#ff2fd0,#4be8ff); border-radius:2px 2px 0 0; box-shadow:0 0 10px #ff2fd066; transition:height .3s ease; animation:neonHueCycle 9s linear infinite; }
+@keyframes neonHueCycle{ 0%{ filter:hue-rotate(0deg); } 100%{ filter:hue-rotate(360deg); } }
+.neon-toggle{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.06em; background:transparent; border:1px solid #4be8ff; color:#4be8ff; padding:9px 15px; cursor:pointer; border-radius:3px; flex-shrink:0; }
 .neon-toggle:hover{ background:#4be8ff22; }
 
 /* === 6. SOGLIA 5 — natura / vetta === */
 .specimen--nature{ background:linear-gradient(180deg,#bcd9e8 0%,#e7eee0 60%,#eef1e3 100%); color:#2b3a2e; }
 .specimen--nature .eyebrow{ color:#3d6b4a; }
-.specimen--nature h2{ font-family:'Fraunces', serif; font-weight:700; font-style:italic; font-size:27px; color:#25361f; }
+.specimen--nature h2{ font-family:'Fraunces', serif; font-weight:700; font-style:italic; font-size:26px; color:#25361f; }
 .specimen--nature p.desc{ color:#41503e; }
 .specimen--nature .pin{ width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:14px solid #6b8a5a; }
-.nat-scene{ position:relative; height:130px; }
-.nat-scene svg{ width:100%; height:100%; }
-.nat-flag{ opacity:0; transition:opacity .4s ease; }
-.nat-flag.show{ opacity:1; }
-.nat-btn{ margin-top:12px; font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.05em; background:#3d6b4a; color:#eef1e3; border:none; padding:9px 16px; border-radius:20px; cursor:pointer; }
+.nat-demo{ display:flex; flex-direction:row; align-items:center; gap:22px; }
+.nat-scene{ position:relative; width:100%; max-width:420px; flex-shrink:0; height:150px; }
+.nat-scene svg{ width:100%; height:100%; overflow:visible; }
+.nat-flagpole{ transition:transform .4s ease; }
+.nat-cloud{ animation:natDrift 11s ease-in-out infinite alternate; }
+@keyframes natDrift{ 0%{ transform:translateX(-40px); } 100%{ transform:translateX(340px); } }
+#natFlag.waving{ animation:flagWave 1.1s ease-in-out infinite; transform-origin:200px 106px; }
+#natFlag.waving.wind-alt{ animation-name:flagWaveAlt; }
+@keyframes flagWave{ 0%,100%{ transform:skewY(0deg) scaleX(1); } 50%{ transform:skewY(-8deg) scaleX(0.92); } }
+@keyframes flagWaveAlt{ 0%,100%{ transform:skewY(0deg) scaleX(1); } 50%{ transform:skewY(8deg) scaleX(0.92); } }
+.nat-btn{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.05em; background:#3d6b4a; color:#eef1e3; border:none; padding:10px 18px; border-radius:20px; cursor:pointer; flex-shrink:0; }
 .nat-btn:hover{ background:#2f5539; }
 
 /* ---------- footer ---------- */
@@ -162,8 +256,8 @@ body::before{
 
   <div class="hero">
     <div class="eyebrow">Come nasce il prezzo di una tag</div>
-    <h1>Non è un prezzo a icona. <em>È un prezzo a lavoro.</em></h1>
-    <p>Ogni tag è incisa dal vivo, non stampata. Il laser lavora davvero ogni forma e ogni carattere che scegli — e il prezzo segue quel lavoro, non un listino fisso a pezzo.</p>
+    <h1>Non scegliamo noi il prezzo<br><em>Lo scegli tu.</em></h1>
+    <p>Ogni tag è incisa, non stampata. Il laser lavora davvero ogni forma e ogni carattere che scegli — e il prezzo segue quel lavoro, non un listino fisso.</p>
     <div class="ticket" id="ticket">
       <div class="tlabel"><span id="ticketTag">ESEMPIO</span><span>DIAL TAG</span></div>
       <div class="tprice" id="ticketPrice">2,40 €</div>
@@ -173,119 +267,296 @@ body::before{
 
   <div class="grid">
 
-    <!-- 1. BASE -->
-    <div class="specimen specimen--sketch">
+    <!-- 0. IL REGISTRO -->
+    <div class="specimen specimen--ledger">
       <div class="pin"></div>
       <div class="specimen-inner">
-        <div class="eyebrow">Il punto di partenza</div>
-        <h2>Si parte sempre da 1€</h2>
-        <p class="desc">Ogni tag ha un costo di base, prima ancora di aggiungere icone o testo — è il tempo di preparare il laser e la tag grezza. Da lì, il prezzo cresce solo con quello che scegli davvero di incidere.</p>
-        <div class="demo sketch-tag">
-          <svg viewBox="0 0 300 140">
-            <circle class="sketch-path" cx="70" cy="70" r="48"></circle>
-            <circle class="sketch-path" cx="70" cy="14" r="5" style="animation-delay:.3s"></circle>
-            <text class="sketch-stamp" x="150" y="78">= 1,00 €</text>
-          </svg>
+        <div class="eyebrow">Il registro</div>
+        <h2>Da dove viene il numero</h2>
+        <p class="desc">Ogni forma e ogni carattere hanno un peso fisso, calibrato sul tempo reale che il laser impiega a inciderli — non è una tariffa a piacere. Più il tracciato è complesso, più tempo macchina richiede, più punteggio accumula, più il prezzo sale. La catena è sempre questa:</p>
+        <div class="ledger-flow">
+          <span class="step">tempo macchina</span><span class="arrow">→</span>
+          <span class="step">complessità del tracciato</span><span class="arrow">→</span>
+          <span class="step">punteggio</span><span class="arrow">→</span>
+          <span class="step">prezzo</span>
+        </div>
+        <div class="ledger-tables">
+          <div class="ledger-table-block">
+            <div class="ledger-table-title">Coefficienti icone (375) — dal più al meno pesante</div>
+            <div class="ledger-scroll">
+              <table><tr><td>live-photo</td><td>250</td></tr><tr><td>snowflake</td><td>218</td></tr><tr><td>deer</td><td>184</td></tr><tr><td>circle-dotted</td><td>181</td></tr><tr><td>paw</td><td>168</td></tr><tr><td>circle-dashed-percentage</td><td>165</td></tr><tr><td>hexagon-3d</td><td>162</td></tr><tr><td>photo-sensor-3</td><td>162</td></tr><tr><td>confetti</td><td>158</td></tr><tr><td>dog</td><td>155</td></tr><tr><td>bug</td><td>155</td></tr><tr><td>rosette-asterisk</td><td>152</td></tr><tr><td>sun-wind</td><td>149</td></tr><tr><td>circle-dashed-plus</td><td>149</td></tr><tr><td>circle-dashed-x</td><td>149</td></tr><tr><td>clover-2</td><td>146</td></tr><tr><td>cloud-cog</td><td>143</td></tr><tr><td>clover</td><td>143</td></tr><tr><td>badge-8k</td><td>143</td></tr><tr><td>spider</td><td>143</td></tr><tr><td>image-in-picture</td><td>143</td></tr><tr><td>movie</td><td>139</td></tr><tr><td>sun-high</td><td>136</td></tr><tr><td>sun-low</td><td>136</td></tr><tr><td>circle-dashed-check</td><td>136</td></tr><tr><td>hexagonal-prism-plus</td><td>136</td></tr><tr><td>brightness-down</td><td>136</td></tr><tr><td>brightness-up</td><td>136</td></tr><tr><td>tilt-shift</td><td>136</td></tr><tr><td>sunset-2</td><td>133</td></tr><tr><td>cricket</td><td>133</td></tr><tr><td>circle-dashed-minus</td><td>133</td></tr><tr><td>irregular-polyhedron-plus</td><td>133</td></tr><tr><td>screenshot</td><td>133</td></tr><tr><td>flower</td><td>130</td></tr><tr><td>heart-cog</td><td>127</td></tr><tr><td>photo-bitcoin</td><td>124</td></tr><tr><td>photo-video</td><td>124</td></tr><tr><td>flood</td><td>121</td></tr><tr><td>badge-2k</td><td>121</td></tr><tr><td>haze</td><td>117</td></tr><tr><td>badge-3k</td><td>117</td></tr><tr><td>badge-4k</td><td>117</td></tr><tr><td>circle-dashed</td><td>117</td></tr><tr><td>rectangular-prism-plus</td><td>117</td></tr><tr><td>focus-auto</td><td>117</td></tr><tr><td>photo-sensor</td><td>117</td></tr><tr><td>sun-electricity</td><td>114</td></tr><tr><td>badge-5k</td><td>114</td></tr><tr><td>cat</td><td>114</td></tr><tr><td>cube-plus</td><td>114</td></tr><tr><td>hexagonal-prism</td><td>114</td></tr><tr><td>octahedron-plus</td><td>114</td></tr><tr><td>squares-selected</td><td>114</td></tr><tr><td>recycle</td><td>114</td></tr><tr><td>diabolo-plus</td><td>111</td></tr><tr><td>badge-hd</td><td>108</td></tr><tr><td>badge-sd</td><td>108</td></tr><tr><td>cube-spark</td><td>108</td></tr><tr><td>irregular-polyhedron</td><td>108</td></tr><tr><td>camera-rotate</td><td>108</td></tr><tr><td>atom-2</td><td>105</td></tr><tr><td>frustum-plus</td><td>105</td></tr><tr><td>rosette</td><td>105</td></tr><tr><td>puzzle</td><td>105</td></tr><tr><td>photo-hexagon</td><td>105</td></tr><tr><td>piano</td><td>105</td></tr><tr><td>polaroid</td><td>105</td></tr><tr><td>pig-money</td><td>102</td></tr><tr><td>om</td><td>102</td></tr><tr><td>hdr</td><td>102</td></tr><tr><td>badge-ad</td><td>98</td></tr><tr><td>badge-ar</td><td>98</td></tr><tr><td>gift</td><td>98</td></tr><tr><td>trophy</td><td>98</td></tr><tr><td>fish-bone</td><td>98</td></tr><tr><td>prism-plus</td><td>98</td></tr><tr><td>compass</td><td>98</td></tr><tr><td>rating-16-plus</td><td>98</td></tr><tr><td>plant</td><td>95</td></tr><tr><td>key</td><td>95</td></tr><tr><td>rating-18-plus</td><td>95</td></tr><tr><td>camera-selfie</td><td>95</td></tr><tr><td>device-tv-old</td><td>95</td></tr><tr><td>photo-pentagon</td><td>95</td></tr><tr><td>sun-moon</td><td>92</td></tr><tr><td>uv-index</td><td>92</td></tr><tr><td>badge-3d</td><td>92</td></tr><tr><td>hexagon-asterisk</td><td>92</td></tr><tr><td>brightness-auto</td><td>92</td></tr><tr><td>focus-2</td><td>92</td></tr><tr><td>macro</td><td>92</td></tr><tr><td>droplets</td><td>89</td></tr><tr><td>cake</td><td>89</td></tr><tr><td>category-plus</td><td>89</td></tr><tr><td>cube</td><td>89</td></tr><tr><td>hexagonal-pyramid-plus</td><td>89</td></tr><tr><td>icons</td><td>89</td></tr><tr><td>rectangular-prism</td><td>89</td></tr><tr><td>aperture</td><td>89</td></tr><tr><td>headphones</td><td>89</td></tr><tr><td>shadow</td><td>89</td></tr><tr><td>whirl</td><td>86</td></tr><tr><td>badge-tm</td><td>86</td></tr><tr><td>pig</td><td>86</td></tr><tr><td>category</td><td>86</td></tr><tr><td>diabolo</td><td>86</td></tr><tr><td>octagon-plus</td><td>86</td></tr><tr><td>cloud-star</td><td>83</td></tr><tr><td>comet</td><td>83</td></tr><tr><td>category-minus</td><td>83</td></tr><tr><td>octagon-plus-2</td><td>83</td></tr><tr><td>square-key</td><td>83</td></tr><tr><td>rating-12-plus</td><td>83</td></tr><tr><td>rating-14-plus</td><td>83</td></tr><tr><td>rating-21-plus</td><td>83</td></tr><tr><td>exposure</td><td>83</td></tr><tr><td>palette</td><td>83</td></tr><tr><td>cherry</td><td>79</td></tr><tr><td>mist</td><td>79</td></tr><tr><td>badge-vr</td><td>79</td></tr><tr><td>horse</td><td>79</td></tr><tr><td>category-2</td><td>79</td></tr><tr><td>frustum</td><td>79</td></tr><tr><td>alien</td><td>76</td></tr><tr><td>feather</td><td>76</td></tr><tr><td>snowman</td><td>76</td></tr><tr><td>badge-vo</td><td>76</td></tr><tr><td>badge-wc</td><td>76</td></tr><tr><td>hexagon-plus</td><td>76</td></tr><tr><td>hexagons</td><td>76</td></tr><tr><td>square-asterisk</td><td>76</td></tr><tr><td>square-percentage</td><td>76</td></tr><tr><td>square-rotated-asterisk</td><td>76</td></tr><tr><td>biohazard</td><td>76</td></tr><tr><td>photo-circle</td><td>76</td></tr><tr><td>photo-square-rounded</td><td>76</td></tr><tr><td>cactus</td><td>73</td></tr><tr><td>cloud-dollar</td><td>73</td></tr><tr><td>sunrise</td><td>73</td></tr><tr><td>sunset</td><td>73</td></tr><tr><td>badge-cc</td><td>73</td></tr><tr><td>circle-half-2</td><td>73</td></tr><tr><td>heart-star</td><td>73</td></tr><tr><td>octahedron</td><td>73</td></tr><tr><td>prism</td><td>73</td></tr><tr><td>pyramid-plus</td><td>73</td></tr><tr><td>magnet</td><td>73</td></tr><tr><td>brightness</td><td>73</td></tr><tr><td>brightness-2</td><td>73</td></tr><tr><td>brightness-half</td><td>73</td></tr><tr><td>plant-2</td><td>70</td></tr><tr><td>sun</td><td>70</td></tr><tr><td>tornado</td><td>70</td></tr><tr><td>wind-electricity</td><td>70</td></tr><tr><td>cylinder-plus</td><td>70</td></tr><tr><td>hexagon-plus-2</td><td>70</td></tr><tr><td>octagon-minus</td><td>70</td></tr><tr><td>triangle-square-circle</td><td>70</td></tr><tr><td>lock</td><td>70</td></tr><tr><td>torii</td><td>70</td></tr><tr><td>microphone</td><td>70</td></tr><tr><td>acorn</td><td>67</td></tr><tr><td>christmas-tree</td><td>67</td></tr><tr><td>cloud-code</td><td>67</td></tr><tr><td>horse-toy</td><td>67</td></tr><tr><td>heart-dollar</td><td>67</td></tr><tr><td>hexagonal-pyramid</td><td>67</td></tr><tr><td>octagon-minus-2</td><td>67</td></tr><tr><td>pentagon-x</td><td>67</td></tr><tr><td>menorah</td><td>67</td></tr><tr><td>radioactive</td><td>67</td></tr><tr><td>music</td><td>67</td></tr><tr><td>photo-sensor-2</td><td>67</td></tr><tr><td>cannabis</td><td>64</td></tr><tr><td>cloud-cancel</td><td>64</td></tr><tr><td>cloud-down</td><td>64</td></tr><tr><td>cloud-heart</td><td>64</td></tr><tr><td>cloud-pin</td><td>64</td></tr><tr><td>cloud-share</td><td>64</td></tr><tr><td>cloud-up</td><td>64</td></tr><tr><td>moon-stars</td><td>64</td></tr><tr><td>seedling</td><td>64</td></tr><tr><td>temperature-plus</td><td>64</td></tr><tr><td>medal</td><td>64</td></tr><tr><td>circle-key</td><td>64</td></tr><tr><td>hemisphere-plus</td><td>64</td></tr><tr><td>pentagon-plus</td><td>64</td></tr><tr><td>sphere-plus</td><td>64</td></tr><tr><td>square-rounded-percentage</td><td>64</td></tr><tr><td>vinyl</td><td>64</td></tr><tr><td>butterfly</td><td>61</td></tr><tr><td>cloud-exclamation</td><td>61</td></tr><tr><td>cloud-pause</td><td>61</td></tr><tr><td>cloud-plus</td><td>61</td></tr><tr><td>cloud-question</td><td>61</td></tr><tr><td>cloud-search</td><td>61</td></tr><tr><td>cloud-x</td><td>61</td></tr><tr><td>storm</td><td>61</td></tr><tr><td>award</td><td>61</td></tr><tr><td>fish</td><td>61</td></tr><tr><td>hexagon-minus</td><td>61</td></tr><tr><td>square-plus</td><td>61</td></tr><tr><td>triangles</td><td>61</td></tr><tr><td>confucius</td><td>61</td></tr><tr><td>brush</td><td>61</td></tr><tr><td>disc</td><td>61</td></tr><tr><td>atom</td><td>57</td></tr><tr><td>cloud-snow</td><td>57</td></tr><tr><td>bat</td><td>57</td></tr><tr><td>circle-asterisk</td><td>57</td></tr><tr><td>circle-percentage</td><td>57</td></tr><tr><td>circle-plus-minus</td><td>57</td></tr><tr><td>heart-code</td><td>57</td></tr><tr><td>heart-share</td><td>57</td></tr><tr><td>hearts</td><td>57</td></tr><tr><td>square-plus-2</td><td>57</td></tr><tr><td>triangle-plus</td><td>57</td></tr><tr><td>mars</td><td>57</td></tr><tr><td>peace</td><td>57</td></tr><tr><td>balloon</td><td>54</td></tr><tr><td>leaf-2</td><td>54</td></tr><tr><td>badges</td><td>54</td></tr><tr><td>cone-plus</td><td>54</td></tr><tr><td>heart-pause</td><td>54</td></tr><tr><td>heart-x</td><td>54</td></tr><tr><td>hexagon-minus-2</td><td>54</td></tr><tr><td>octagon</td><td>54</td></tr><tr><td>contrast-2</td><td>54</td></tr><tr><td>cloud-bolt</td><td>51</td></tr><tr><td>cloud-rain</td><td>51</td></tr><tr><td>crystal-ball</td><td>51</td></tr><tr><td>iceberg</td><td>51</td></tr><tr><td>leaf-maple</td><td>51</td></tr><tr><td>bell</td><td>51</td></tr><tr><td>fish-hook</td><td>51</td></tr><tr><td>dog-bowl</td><td>51</td></tr><tr><td>heart-pin</td><td>51</td></tr><tr><td>heart-question</td><td>51</td></tr><tr><td>heart-search</td><td>51</td></tr><tr><td>square-rounded-plus-2</td><td>51</td></tr><tr><td>square-x</td><td>51</td></tr><tr><td>triangle-plus-2</td><td>51</td></tr><tr><td>registered</td><td>51</td></tr><tr><td>cloud-check</td><td>48</td></tr><tr><td>cloud-minus</td><td>48</td></tr><tr><td>ripple</td><td>48</td></tr><tr><td>temperature-fahrenheit</td><td>48</td></tr><tr><td>temperature-minus</td><td>48</td></tr><tr><td>wind</td><td>48</td></tr><tr><td>horseshoe</td><td>48</td></tr><tr><td>circle-square</td><td>48</td></tr><tr><td>circles</td><td>48</td></tr><tr><td>heart-cancel</td><td>48</td></tr><tr><td>heart-down</td><td>48</td></tr><tr><td>heart-exclamation</td><td>48</td></tr><tr><td>heart-up</td><td>48</td></tr><tr><td>pentagon-minus</td><td>48</td></tr><tr><td>sphere-2</td><td>48</td></tr><tr><td>square-check</td><td>48</td></tr><tr><td>square-dot</td><td>48</td></tr><tr><td>square-rounded-plus</td><td>48</td></tr><tr><td>sparkles</td><td>48</td></tr><tr><td>exposure-plus-2</td><td>48</td></tr><tr><td>mask</td><td>48</td></tr><tr><td>growth</td><td>45</td></tr><tr><td>meteor</td><td>45</td></tr><tr><td>temperature-celsius</td><td>45</td></tr><tr><td>candle</td><td>45</td></tr><tr><td>heart-plus</td><td>45</td></tr><tr><td>hexagon</td><td>45</td></tr><tr><td>pyramid</td><td>45</td></tr><tr><td>spade</td><td>45</td></tr><tr><td>square-forbid</td><td>45</td></tr><tr><td>square-forbid-2</td><td>45</td></tr><tr><td>square-minus</td><td>45</td></tr><tr><td>square-rotated-forbid</td><td>45</td></tr><tr><td>square-rotated-forbid-2</td><td>45</td></tr><tr><td>anchor</td><td>45</td></tr><tr><td>servicemark</td><td>45</td></tr><tr><td>cloud-storm</td><td>42</td></tr><tr><td>leaf</td><td>42</td></tr><tr><td>mountain</td><td>42</td></tr><tr><td>rainbow</td><td>42</td></tr><tr><td>cross</td><td>42</td></tr><tr><td>circle-plus</td><td>42</td></tr><tr><td>diamond</td><td>42</td></tr><tr><td>jewish-star</td><td>42</td></tr><tr><td>square-minus-2</td><td>42</td></tr><tr><td>triangle-minus</td><td>42</td></tr><tr><td>venus</td><td>42</td></tr><tr><td>exposure-plus-1</td><td>42</td></tr><tr><td>drop-circle</td><td>38</td></tr><tr><td>circle-plus-2</td><td>38</td></tr><tr><td>heart-bolt</td><td>38</td></tr><tr><td>heart-check</td><td>38</td></tr><tr><td>heart-spark</td><td>38</td></tr><tr><td>square-rounded-x</td><td>38</td></tr><tr><td>ankh</td><td>38</td></tr><tr><td>ce</td><td>38</td></tr><tr><td>flag</td><td>38</td></tr><tr><td>parking-circle</td><td>38</td></tr><tr><td>trademark</td><td>38</td></tr><tr><td>cloud-fog</td><td>35</td></tr><tr><td>star</td><td>35</td></tr><tr><td>bone</td><td>35</td></tr><tr><td>caret-left-right</td><td>35</td></tr><tr><td>circle-rectangle</td><td>35</td></tr><tr><td>cylinder</td><td>35</td></tr><tr><td>heart-minus</td><td>35</td></tr><tr><td>pentagon</td><td>35</td></tr><tr><td>square-rounded-check</td><td>35</td></tr><tr><td>square-rounded-minus-2</td><td>35</td></tr><tr><td>triangle-minus-2</td><td>35</td></tr><tr><td>pencil</td><td>35</td></tr><tr><td>cloud</td><td>32</td></tr><tr><td>temperature</td><td>32</td></tr><tr><td>circle-triangle</td><td>32</td></tr><tr><td>circle-x</td><td>32</td></tr><tr><td>clubs</td><td>32</td></tr><tr><td>square-rounded-minus</td><td>32</td></tr><tr><td>copyleft</td><td>32</td></tr><tr><td>copyright</td><td>32</td></tr><tr><td>exposure-minus-2</td><td>32</td></tr><tr><td>microphone-2</td><td>32</td></tr><tr><td>panorama-horizontal</td><td>32</td></tr><tr><td>panorama-vertical</td><td>32</td></tr><tr><td>flare</td><td>29</td></tr><tr><td>circle-check</td><td>29</td></tr><tr><td>circle-dot</td><td>29</td></tr><tr><td>diamonds</td><td>29</td></tr><tr><td>perspective</td><td>29</td></tr><tr><td>rectangle</td><td>29</td></tr><tr><td>rectangle-rounded-bottom</td><td>29</td></tr><tr><td>rectangle-rounded-top</td><td>29</td></tr><tr><td>rectangle-vertical</td><td>29</td></tr><tr><td>sphere</td><td>29</td></tr><tr><td>square</td><td>29</td></tr><tr><td>square-dashed</td><td>29</td></tr><tr><td>square-rotated</td><td>29</td></tr><tr><td>command</td><td>29</td></tr><tr><td>contrast</td><td>29</td></tr><tr><td>focus</td><td>29</td></tr><tr><td>flame</td><td>26</td></tr><tr><td>moon-2</td><td>26</td></tr><tr><td>crown</td><td>26</td></tr><tr><td>cancel</td><td>26</td></tr><tr><td>circle-half</td><td>26</td></tr><tr><td>circle-half-vertical</td><td>26</td></tr><tr><td>circle-minus</td><td>26</td></tr><tr><td>cone</td><td>26</td></tr><tr><td>cone-2</td><td>26</td></tr><tr><td>hemisphere</td><td>26</td></tr><tr><td>exposure-minus-1</td><td>26</td></tr><tr><td>badge</td><td>23</td></tr><tr><td>capsule</td><td>23</td></tr><tr><td>capsule-horizontal</td><td>23</td></tr><tr><td>circle-minus-2</td><td>23</td></tr><tr><td>circles-relation</td><td>23</td></tr><tr><td>triangle</td><td>23</td></tr><tr><td>triangle-inverted</td><td>23</td></tr><tr><td>infinity</td><td>23</td></tr><tr><td>ribbon-health</td><td>23</td></tr><tr><td>option</td><td>19</td></tr><tr><td>exposure-0</td><td>19</td></tr><tr><td>moon</td><td>16</td></tr><tr><td>egg</td><td>16</td></tr><tr><td>heart</td><td>16</td></tr><tr><td>fish-christianity</td><td>16</td></tr><tr><td>oval-vertical</td><td>16</td></tr><tr><td>square-rounded</td><td>16</td></tr><tr><td>ovale-h</td><td>16</td></tr><tr><td>border-corner-ios</td><td>13</td></tr><tr><td>circle</td><td>10</td></tr><tr><td>oval</td><td>10</td></tr></table>
+            </div>
+          </div>
+          <div class="ledger-table-block">
+            <div class="ledger-table-title">Coefficienti font (22, per carattere) — dal più al meno pesante</div>
+            <div class="ledger-scroll">
+              <table><tr><td>Macchina vissuta</td><td>24</td></tr><tr><td>Western slab</td><td>16.35</td></tr><tr><td>Pennarello</td><td>16.2</td></tr><tr><td>Western ornato</td><td>14.67</td></tr><tr><td>Corsivo a mano</td><td>14.04</td></tr><tr><td>Corsivo francese</td><td>14.01</td></tr><tr><td>Script raffinato</td><td>13.65</td></tr><tr><td>Script elegante</td><td>13.35</td></tr><tr><td>Gotico medievale</td><td>13.02</td></tr><tr><td>Monumentale</td><td>12.39</td></tr><tr><td>Gotico religioso</td><td>12.27</td></tr><tr><td>Macchina da scrivere</td><td>12.15</td></tr><tr><td>Serif classico</td><td>12.12</td></tr><tr><td>Tondo morbido</td><td>11.7</td></tr><tr><td>Fumetto bold</td><td>11.52</td></tr><tr><td>Arrotondato</td><td>11.49</td></tr><tr><td>Bold giocoso</td><td>11.4</td></tr><tr><td>Urban bold</td><td>10.95</td></tr><tr><td>Stencil militare</td><td>10.86</td></tr><tr><td>Sans tecnico</td><td>10.65</td></tr><tr><td>Condensato bold</td><td>10.53</td></tr><tr><td>Tecnico mono</td><td>10.5</td></tr></table>
+            </div>
+            <div class="ledger-note">Il font pesa per ogni carattere scritto: un font pesante su una scritta lunga costa più dello stesso font su una parola sola.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. BASE -->
+    <div class="specimen specimen--sketch flip-card" id="card0">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 0</div>
+              <h2>Si parte sempre da 1€</h2>
+              <p class="desc">Ogni tag ha un costo di base, prima ancora di aggiungere icone o testo — è il tempo di preparare il laser e la tag grezza. Da lì, il prezzo cresce solo con quello che scegli davvero di incidere.</p>
+            </div>
+            <div class="specimen-demo sketch-demo">
+              <div class="sketch-col">
+                <div class="sketch-tag sketch-static">
+                  <svg viewBox="0 0 160 158">
+                    <circle class="sketch-path" pathLength="1" cx="70" cy="74" r="46"></circle>
+                    <circle class="sketch-path" pathLength="1" cx="70" cy="20" r="5"></circle>
+                    <text class="sketch-stamp" x="34" y="150">= 1,00 €</text>
+                  </svg>
+                </div>
+                <div class="sketch-caption">il tuo pezzo</div>
+              </div>
+              <div class="sketch-col">
+                <div class="sketch-tag sketch-live" id="sketchTag"></div>
+                <div class="sketch-caption">tocca per ridisegnare</div>
+              </div>
+            </div>
+          </div>
+          <button class="flip-btn" data-flip="card0" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner card0-back-inner">
+            <div class="card0-back-text">
+              <div class="eyebrow">Requisito</div>
+              <div class="flip-req-title">Sempre attiva</div>
+              <p class="flip-req-text">Non c'è una soglia da raggiungere: questo costo di base parte dal primo elemento che aggiungi alla tag, che sia un'icona o una parola.</p>
+              <div class="flip-status" id="flipStatus0"></div>
+            </div>
+            <div class="card0-name-scene">
+              <svg class="name-circle" viewBox="0 0 150 118">
+                <circle cx="75" cy="54" r="40" fill="none" stroke="#2a2620" stroke-width="2"></circle>
+                <circle cx="75" cy="12" r="4" fill="none" stroke="#2a2620" stroke-width="2"></circle>
+              </svg>
+              <div class="name-reveal-wrap" id="nameRevealWrap"><span class="name-text" id="nameText"></span></div>
+              <div class="name-pencil" id="namePencil">
+                <svg viewBox="0 0 24 12">
+                  <rect x="0" y="3" width="16" height="6" rx="1.5" fill="#9a2b20"></rect>
+                  <polygon points="16,3 22,6 16,9" fill="#3a2f1c"></polygon>
+                </svg>
+              </div>
+            </div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card0" type="button">← torna</button>
         </div>
       </div>
     </div>
 
     <!-- 2. SOGLIA 1: dimensione attenuata -->
-    <div class="specimen specimen--blueprint">
-      <div class="pin"></div>
-      <div class="specimen-inner">
-        <div class="eyebrow">Misure</div>
-        <h2>Ingrandire non costa il doppio</h2>
-        <p class="desc">Su pezzi con più elementi, aumentare la dimensione di un'icona pesa sul prezzo meno di quanto pesi visivamente. Non paghi al millimetro quadrato.</p>
-        <div class="demo">
-          <div class="bp-row">
-            <div class="bp-icon" id="bpIcon">◆</div>
-            <div class="bp-slider"><input type="range" min="0" max="100" value="30" id="bpRange"></div>
-          </div>
-          <div class="bp-bars">
-            <div>
-              <div class="bp-bar-label"><span>Crescita visiva</span><span id="bpVisVal">+30%</span></div>
-              <div class="bp-bar-track"><div class="bp-bar-fill" id="bpVisBar" style="width:30%"></div></div>
+    <div class="specimen specimen--blueprint flip-card" id="card1">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 1</div>
+              <h2>Ingrandire non costa il doppio</h2>
+              <p class="desc">Su pezzi con più elementi, aumentare la dimensione di un'icona pesa sul prezzo meno di quanto pesi visivamente. Non paghi al millimetro quadrato.</p>
             </div>
-            <div>
-              <div class="bp-bar-label"><span>Effetto sul prezzo</span><span id="bpPriceVal">+12%</span></div>
-              <div class="bp-bar-track"><div class="bp-bar-fill dim" id="bpPriceBar" style="width:12%"></div></div>
+            <div class="specimen-demo bp-demo">
+              <div class="bp-stage" id="bpStage">
+                <div class="bp-shape" id="bpShape"></div>
+                <div class="bp-handle" id="bpHandle"></div>
+                <div class="bp-stage-label">trascina l'angolo</div>
+              </div>
+              <div class="bp-vbars">
+                <div class="bp-vbar-col">
+                  <div class="bp-vbar-val" id="bpVisVal">+30%</div>
+                  <div class="bp-vbar-track"><div class="bp-vbar-fill" id="bpVisBar" style="height:30%"></div></div>
+                  <div class="bp-vbar-label">crescita<br>visiva</div>
+                </div>
+                <div class="bp-vbar-col">
+                  <div class="bp-vbar-val" id="bpPriceVal">+12%</div>
+                  <div class="bp-vbar-track"><div class="bp-vbar-fill dim" id="bpPriceBar" style="height:12%"></div></div>
+                  <div class="bp-vbar-label">effetto<br>sul prezzo</div>
+                </div>
+              </div>
             </div>
           </div>
+          <button class="flip-btn" data-flip="card1" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner">
+            <div class="eyebrow">Requisito</div>
+            <div class="flip-req-title">Almeno 3 elementi, misti</div>
+            <p class="flip-req-text">Serve un totale di almeno 3 elementi sulla tag, con almeno un'icona e almeno un blocco di testo insieme — non basta averne tanti tutti dello stesso tipo.</p>
+            <div class="flip-status" id="flipStatus1"></div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card1" type="button">← torna</button>
         </div>
       </div>
     </div>
 
     <!-- 3. SOGLIA 2: font verso media -->
-    <div class="specimen specimen--editorial">
-      <div class="pin"></div>
-      <div class="specimen-inner">
-        <div class="eyebrow">Tipografia</div>
-        <h2>Tanti font, prezzo più prevedibile</h2>
-        <p class="desc">Quando un pezzo ha più blocchi di testo, i font più elaborati si avvicinano al costo medio del pezzo invece di pesare per intero — meno sorprese, prezzo più stabile.</p>
-        <div class="demo">
-          <div class="ed-samples" id="edSamples">
-            <div class="ed-chip active" data-v="1">1 blocco</div>
-            <div class="ed-chip" data-v="2">2 blocchi</div>
-            <div class="ed-chip" data-v="4">4 blocchi</div>
+    <div class="specimen specimen--editorial flip-card" id="card2">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="ed-pencil" aria-hidden="true">
+            <svg viewBox="0 0 60 34">
+              <line x1="4" y1="26" x2="56" y2="26" stroke="#c8c0ab" stroke-width="1"></line>
+              <g class="ed-pencil-icon">
+                <rect x="0" y="20" width="24" height="6" rx="2" fill="#9a2b20"></rect>
+                <polygon points="24,20 32,23 24,26" fill="#3a2f1c"></polygon>
+                <rect x="-5" y="20" width="6" height="6" rx="1.5" fill="#d8cba8"></rect>
+              </g>
+            </svg>
           </div>
-          <div class="ed-line">
-            <div class="ed-track"></div>
-            <div class="ed-dot" id="edDot1" style="left:20%"><span class="ed-dot-label">script</span></div>
-            <div class="ed-dot" id="edDot2" style="left:80%"><span class="ed-dot-label">mono</span></div>
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 2</div>
+              <h2>Tanti font, prezzo più prevedibile</h2>
+              <p class="desc">Quando un pezzo ha più blocchi di testo, i font più elaborati si avvicinano al costo medio del pezzo invece di pesare per intero.</p>
+            </div>
+            <div class="specimen-demo ed-demo">
+              <div class="ed-phrase" id="edPhrase"></div>
+              <div class="ed-buttons">
+                <div class="ed-chip" id="edMore">+ font elaborato</div>
+                <div class="ed-chip" id="edLess">+ font semplice</div>
+              </div>
+              <div class="ed-line">
+                <div class="ed-track"></div>
+                <div class="ed-dot" id="edDot1" style="left:35%"><span class="ed-dot-label" id="edLabel1">semplice</span></div>
+                <div class="ed-dot" id="edDot2" style="left:65%"><span class="ed-dot-label" id="edLabel2">elaborato</span></div>
+              </div>
+            </div>
           </div>
+          <button class="flip-btn" data-flip="card2" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner">
+            <div class="eyebrow">Requisito</div>
+            <div class="flip-req-title">Almeno 3 blocchi di testo</div>
+            <p class="flip-req-text">Serve avere almeno 3 blocchi di testo separati sulla tag — non conta la lunghezza del testo, conta quanti blocchi diversi hai aggiunto.</p>
+            <div class="flip-status" id="flipStatus2"></div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card2" type="button">← torna</button>
         </div>
       </div>
     </div>
 
     <!-- 4. SOGLIA 3: sconto icone extra -->
-    <div class="specimen specimen--comics">
-      <div class="pin"></div>
-      <div class="specimen-inner">
-        <div class="eyebrow">Tante icone</div>
-        <h2>Le prime pesano di più</h2>
-        <p class="desc">Da un tot di icone in su, solo le prime due — le più elaborate — pagano il prezzo pieno. Tutte le altre hanno automaticamente uno sconto.</p>
-        <div class="demo">
-          <button class="cx-btn" id="cxAdd">+ AGGIUNGI ICONA</button>
-          <div class="cx-row" id="cxRow"></div>
+    <div class="specimen specimen--comics flip-card" id="card3">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="cx-sparkle" style="top:16px; right:18%; animation-delay:0s;"></div>
+          <div class="cx-sparkle" style="bottom:20px; left:6%; animation-delay:0.3s;"></div>
+          <div class="cx-sparkle" style="top:40%; right:5%; animation-delay:0.6s;"></div>
+          <div class="cx-sparkle" style="top:64px; left:3%; animation-delay:0.9s;"></div>
+          <div class="cx-sparkle" style="bottom:56px; right:32%; animation-delay:1.2s;"></div>
+          <div class="cx-sparkle" style="top:14%; left:34%; animation-delay:1.5s;"></div>
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 3</div>
+              <h2>Le prime pesano di più</h2>
+              <p class="desc">Da un tot di icone in su, solo le prime due — le più elaborate — pagano il prezzo pieno. Tutte le altre hanno automaticamente uno sconto.</p>
+              <button class="cx-btn" id="cxAdd">+ AGGIUNGI ICONA</button>
+            </div>
+            <div class="specimen-demo">
+              <div class="cx-row" id="cxRow"></div>
+            </div>
+          </div>
+          <button class="flip-btn" data-flip="card3" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner">
+            <div class="eyebrow">Requisito</div>
+            <div class="flip-req-title">Almeno 5 icone</div>
+            <p class="flip-req-text">Da 5 icone in su sulla tag, lo sconto sulle icone oltre le prime due si attiva automaticamente.</p>
+            <div class="flip-status" id="flipStatus3"></div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card3" type="button">← torna</button>
         </div>
       </div>
     </div>
 
     <!-- 5. SOGLIA 4: sconto scalare -->
-    <div class="specimen specimen--neon">
-      <div class="pin"></div>
-      <div class="specimen-inner">
-        <div class="eyebrow">Pezzi densi</div>
-        <h2>PIÙ NE METTI<br>MENO PESA</h2>
-        <p class="desc">Sui pezzi davvero carichi di icone, lo sconto cresce gradualmente ad ogni aggiunta. Il prezzo sale sempre meno che proporzionalmente.</p>
-        <div class="demo">
-          <div class="neon-bars" id="neonBars"></div>
-          <button class="neon-toggle" id="neonMore">+ un'altra icona</button>
+    <div class="specimen specimen--neon flip-card" id="card4">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 4</div>
+              <h2>PIÙ NE METTI<br>MENO PESA</h2>
+              <p class="desc">Sui pezzi davvero carichi di icone, il prezzo sale, proporzionalmente, sempre meno ad ogni aggiunta.</p>
+            </div>
+            <div class="specimen-demo neon-demo">
+              <div class="neon-bars" id="neonBars"></div>
+              <button class="neon-toggle" id="neonMore">+ icona</button>
+            </div>
+          </div>
+          <button class="flip-btn" data-flip="card4" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner">
+            <div class="eyebrow">Requisito</div>
+            <div class="flip-req-title">Almeno 10 icone</div>
+            <p class="flip-req-text">Da 10 icone in su, lo sconto non è più fisso: cresce gradualmente in base alla posizione di ogni icona in classifica di peso.</p>
+            <div class="flip-status" id="flipStatus4"></div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card4" type="button">← torna</button>
         </div>
       </div>
     </div>
 
     <!-- 6. SOGLIA 5: tetto -->
-    <div class="specimen specimen--nature">
-      <div class="pin"></div>
-      <div class="specimen-inner">
-        <div class="eyebrow">Il limite</div>
-        <h2>Anche il pezzo più carico ha un tetto</h2>
-        <p class="desc">Oltre una certa densità, il prezzo si blocca. Qualunque cosa aggiungi da lì in poi, non sale più.</p>
-        <div class="demo">
-          <div class="nat-scene">
-            <svg viewBox="0 0 300 130">
-              <polygon points="0,130 90,30 150,90 200,15 300,130" fill="#8fa980"></polygon>
-              <polygon points="70,55 90,30 110,55" fill="#eef1e3"></polygon>
-              <polygon points="180,42 200,15 220,42" fill="#eef1e3"></polygon>
-              <g class="nat-flag" id="natFlag">
-                <line x1="200" y1="15" x2="200" y2="-8" stroke="#25361f" stroke-width="2"></line>
-                <polygon points="200,-8 222,-2 200,4" fill="#c5271a"></polygon>
-              </g>
-            </svg>
+    <div class="specimen specimen--nature flip-card" id="card5">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="pin"></div>
+          <div class="specimen-inner">
+            <div class="specimen-text">
+              <div class="eyebrow">Soglia 5</div>
+              <h2>Anche il pezzo più carico ha un tetto</h2>
+              <p class="desc">Oltre una certa densità, il prezzo si blocca. Qualunque cosa aggiungi da lì in poi, non sale più.</p>
+            </div>
+            <div class="specimen-demo nat-demo">
+              <div class="nat-scene">
+                <svg viewBox="0 0 300 130">
+                  <g class="nat-cloud">
+                    <ellipse cx="0" cy="26" rx="20" ry="9" fill="#ffffff" opacity="0.75"></ellipse>
+                    <ellipse cx="16" cy="20" rx="14" ry="8" fill="#ffffff" opacity="0.75"></ellipse>
+                    <ellipse cx="-16" cy="22" rx="12" ry="7" fill="#ffffff" opacity="0.75"></ellipse>
+                  </g>
+                  <polygon points="0,130 90,30 150,90 200,15 300,130" fill="#8fa980"></polygon>
+                  <polygon points="70,55 90,30 110,55" fill="#eef1e3"></polygon>
+                  <polygon points="180,42 200,15 220,42" fill="#eef1e3"></polygon>
+                  <line x1="200" y1="15" x2="255" y2="15" stroke="#25361f" stroke-width="1" stroke-dasharray="3,3"></line>
+                  <text x="259" y="19" font-family="JetBrains Mono, monospace" font-size="11" fill="#25361f">5,50 €</text>
+                  <g class="nat-flagpole" id="natFlagpole" style="transform:translateY(0px)">
+                    <line x1="200" y1="125" x2="200" y2="100" stroke="#25361f" stroke-width="2"></line>
+                    <polygon id="natFlag" points="200,100 222,106 200,112" fill="#c5271a"></polygon>
+                  </g>
+                </svg>
+              </div>
+              <button class="nat-btn" id="natAdd">Di più!</button>
+            </div>
           </div>
-          <button class="nat-btn" id="natAdd">+ aggiungi ancora</button>
+          <button class="flip-btn" data-flip="card5" type="button">vedi i requisiti</button>
+        </div>
+        <div class="flip-face flip-back">
+          <div class="flip-back-inner">
+            <div class="eyebrow">Requisito</div>
+            <div class="flip-req-title">Punteggio complessivo di almeno 1000 punti</div>
+            <p class="flip-req-text">Non dipende dal numero di elementi ma dal punteggio totale del pezzo: icone pesanti, font elaborati e dimensioni grandi insieme possono farti raggiungere il tetto anche con pochi elementi.</p>
+            <div class="flip-status" id="flipStatus5"></div>
+          </div>
+          <button class="flip-btn flip-btn-back" data-flip="card5" type="button">← torna</button>
         </div>
       </div>
     </div>
@@ -300,7 +571,7 @@ body::before{
 </div>
 
 <script>
-// ---- ticket in alto: legge lo stato lasciato dal configuratore, se c'è ----
+// ---- ticket in alto ----
 (function(){
   try{
     const raw = localStorage.getItem('dialTagPriceSnapshot');
@@ -310,83 +581,368 @@ body::before{
       document.getElementById('ticketPrice').textContent = d.price;
       document.getElementById('ticketDesc').textContent = d.desc;
     }
-  }catch(e){}
+  }catch(e){ console.error('[ticket]', e); }
 })();
 
-// ---- 2. blueprint: slider dimensione ----
-const bpRange = document.getElementById('bpRange');
-const bpIcon = document.getElementById('bpIcon');
-const bpVisBar = document.getElementById('bpVisBar');
-const bpPriceBar = document.getElementById('bpPriceBar');
-const bpVisVal = document.getElementById('bpVisVal');
-const bpPriceVal = document.getElementById('bpPriceVal');
-function updateBp(){
-  const v = parseInt(bpRange.value,10);
-  const scale = 1 + v/100;
-  bpIcon.style.transform = 'scale('+scale+')';
-  bpVisBar.style.width = v+'%';
-  const attenuated = v*0.4;
-  bpPriceBar.style.width = attenuated+'%';
-  bpVisVal.textContent = '+'+v+'%';
-  bpPriceVal.textContent = '+'+Math.round(attenuated)+'%';
-}
-bpRange.addEventListener('input', updateBp);
-updateBp();
+// ---- flip: gira/torna su ogni post-it ----
+(function(){
+  try{
+    document.querySelectorAll('.flip-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = document.getElementById(btn.dataset.flip);
+        if(card) card.classList.toggle('flipped');
+      });
+    });
+  }catch(e){ console.error('[flip]', e); }
+})();
 
-// ---- 3. editorial: blocchi di testo verso la media ----
-const edChips = document.querySelectorAll('.ed-chip');
-const edDot1 = document.getElementById('edDot1');
-const edDot2 = document.getElementById('edDot2');
-edChips.forEach(chip => chip.addEventListener('click', () => {
-  edChips.forEach(c => c.classList.remove('active'));
-  chip.classList.add('active');
-  const n = parseInt(chip.dataset.v,10);
-  const pull = n <= 1 ? 0 : Math.min(0.6, (n-1)*0.22);
-  const p1 = 20 + (50-20)*pull;
-  const p2 = 80 - (80-50)*pull;
-  edDot1.style.left = p1+'%';
-  edDot2.style.left = p2+'%';
-}));
+// ---- retro dei post-it: verifica la tag reale del cliente contro ogni soglia ----
+// Legge lo snapshot esteso che il configuratore dovrebbe scrivere in localStorage:
+// { price, desc, nIcone, nTesti, totElementi, totale, s1, s2, s3, s4, s5 }
+// Se lo snapshot non ha questi campi (versione del configuratore non ancora aggiornata,
+// o cliente che non ha ancora usato lo strumento), mostra un placeholder invece di inventare dati.
+(function(){
+  try{
+    let snap = null;
+    try{
+      const raw = localStorage.getItem('dialTagPriceSnapshot');
+      if(raw) snap = JSON.parse(raw);
+    }catch(e){}
 
-// ---- 4. comics: aggiungi icone, prime due prezzo pieno ----
-const cxRow = document.getElementById('cxRow');
-let cxCount = 0;
-document.getElementById('cxAdd').addEventListener('click', () => {
-  if(cxCount >= 8) return;
-  cxCount++;
-  const el = document.createElement('div');
-  el.className = 'cx-icon ' + (cxCount<=2 ? 'full' : 'disc');
-  el.textContent = cxCount<=2 ? 'PIENO' : 'SCONTO';
-  cxRow.appendChild(el);
-});
+    const hasFullData = !!(snap && typeof snap.s1 === 'boolean' && typeof snap.nIcone === 'number');
+
+    function statsLine(extra){
+      if(!snap) return '';
+      const n = snap.nIcone, t = snap.nTesti;
+      let line = 'Il tuo pezzo: ' + n + ' icon' + (n === 1 ? 'a' : 'e') + ' · ' + t + ' blocc' + (t === 1 ? 'o' : 'hi') + ' di testo';
+      if(extra) line += ' · ' + extra;
+      return line;
+    }
+
+    const checks = [
+      { id: 'flipStatus1', ok: hasFullData && !!snap.s1 },
+      { id: 'flipStatus2', ok: hasFullData && !!snap.s2 },
+      { id: 'flipStatus3', ok: hasFullData && !!snap.s3 },
+      { id: 'flipStatus4', ok: hasFullData && !!snap.s4 },
+      { id: 'flipStatus5', ok: hasFullData && !!snap.s5, extra: hasFullData ? ('punteggio ' + Math.round(snap.totale || 0)) : null }
+    ];
+
+    checks.forEach(c => {
+      const box = document.getElementById(c.id);
+      if(!box) return;
+      if(!hasFullData){
+        box.innerHTML =
+          '<div class="flip-placeholder">Non abbiamo ancora dati sul tuo pezzo — questo apparirà una volta creata la tua tag nel configuratore.</div>' +
+          '<a class="flip-cta" href="index.html">Crea la tua tag →</a>';
+      }else{
+        box.innerHTML =
+          '<div class="flip-tagstats">' + statsLine(c.extra) + '</div>' +
+          '<div class="flip-result ' + (c.ok ? 'yes' : 'no') + '">' + (c.ok ? '✓ Soglia raggiunta' : '✗ Non ancora raggiunta') + '</div>';
+      }
+    });
+
+    // soglia 0 (sempre attiva): niente da verificare, mostra solo il prezzo attuale se c'è
+    const box0 = document.getElementById('flipStatus0');
+    if(box0){
+      box0.innerHTML = snap && snap.price
+        ? '<div class="flip-tagstats">Il tuo pezzo, in questo momento: ' + snap.price + '</div>'
+        : '<div class="flip-placeholder">Ancora nessun pezzo configurato.</div><a class="flip-cta" href="index.html">Crea la tua tag →</a>';
+    }
+  }catch(e){ console.error('[flip-status]', e); }
+})();
+
+// ---- retro Soglia 0: la matita scrive nomi casuali dentro il cerchio, in loop ----
+(function(){
+  try{
+    const wrap = document.getElementById('nameRevealWrap');
+    const span = document.getElementById('nameText');
+    const pencil = document.getElementById('namePencil');
+    if(!wrap || !span || !pencil) return;
+    const names = ['Marco','Giulia','Luca','Sara','Francesco','Chiara','Alessandro','Giorgia','Matteo','Federica','Andrea','Martina','Davide','Elisa','Simone','Valentina','Riccardo','Ilaria','Lorenzo','Sofia','Giovanni','Alice','Stefano','Beatrice','Tommaso','Aurora'];
+    const sceneWidth = 150;
+    function cycle(){
+      const name = names[Math.floor(Math.random() * names.length)];
+      span.textContent = name;
+      wrap.style.transition = 'none';
+      pencil.style.transition = 'none';
+      wrap.style.width = '0px';
+      pencil.style.transform = 'translateX(0px)';
+      void wrap.offsetWidth; // forza reflow prima di misurare
+      const fullWidth = span.getBoundingClientRect().width;
+      const leftPos = Math.max(4, (sceneWidth - fullWidth) / 2);
+      wrap.style.left = leftPos + 'px';
+      pencil.style.left = leftPos + 'px';
+      const duration = Math.max(700, Math.min(2200, name.length * 110));
+      requestAnimationFrame(() => {
+        wrap.style.transition = 'width ' + duration + 'ms ease-out';
+        pencil.style.transition = 'transform ' + duration + 'ms ease-out';
+        wrap.style.width = fullWidth + 'px';
+        pencil.style.transform = 'translateX(' + fullWidth + 'px)';
+      });
+      setTimeout(cycle, duration + 3500);
+    }
+    cycle();
+  }catch(e){ console.error('[card0-names]', e); }
+})();
+
+// ---- 1. base: il disegno di destra si ridisegna con una forma casuale ad ogni click ----
+(function(){
+  try{
+    const container = document.getElementById('sketchTag');
+    // sagome tipo-tag, tutte nello stesso viewBox 0 0 160 158, con pathLength=1
+    // per far funzionare l'animazione di disegno allo stesso modo su qualsiasi forma
+    const shapes = [
+      { hx:70, hy:20, body:'<circle class="sketch-path" pathLength="1" cx="70" cy="74" r="46"></circle>' },
+      { hx:70, hy:16, body:'<rect class="sketch-path" pathLength="1" x="26" y="30" width="88" height="88" rx="14"></rect>' },
+      { hx:70, hy:20, body:'<polygon class="sketch-path" pathLength="1" points="70.0,28.0 109.8,51.0 109.8,97.0 70.0,120.0 30.2,97.0 30.2,51.0"></polygon>' },
+      { hx:70, hy:12, body:'<polygon class="sketch-path" pathLength="1" points="26,124 26,58 70,18 114,58 114,124"></polygon>' },
+      { hx:70, hy:22, body:'<ellipse class="sketch-path" pathLength="1" cx="70" cy="76" rx="52" ry="40"></ellipse>' }
+    ];
+    let lastIndex = -1;
+    function drawRandom(){
+      let i = Math.floor(Math.random() * shapes.length);
+      if(shapes.length > 1 && i === lastIndex) i = (i + 1) % shapes.length; // evita la stessa forma due volte di fila
+      lastIndex = i;
+      const s = shapes[i];
+      container.innerHTML =
+        '<svg viewBox="0 0 160 158">' +
+          s.body +
+          '<circle class="sketch-path" pathLength="1" cx="' + s.hx + '" cy="' + s.hy + '" r="5"></circle>' +
+          '<text class="sketch-stamp" x="34" y="150">= 1,00 €</text>' +
+        '</svg>';
+    }
+    drawRandom();
+    container.addEventListener('click', drawRandom);
+  }catch(e){ console.error('[base]', e); }
+})();
+
+// ---- 2. blueprint: resize via trascinamento ----
+(function(){
+  try{
+    const bpShape = document.getElementById('bpShape');
+    const bpHandle = document.getElementById('bpHandle');
+    const bpVisBar = document.getElementById('bpVisBar');
+    const bpPriceBar = document.getElementById('bpPriceBar');
+    const bpVisVal = document.getElementById('bpVisVal');
+    const bpPriceVal = document.getElementById('bpPriceVal');
+    let bpV = 30;
+    function renderBp(){
+      const size = 34 + bpV * 0.7;
+      bpShape.style.width = size + 'px';
+      bpShape.style.height = size + 'px';
+      const half = size / 1.41421356 / 2;
+      bpHandle.style.left = (70 + half - 7) + 'px';
+      bpHandle.style.top = (70 + half - 7) + 'px';
+      bpVisBar.style.height = bpV + '%';
+      const attenuated = bpV * 0.4;
+      bpPriceBar.style.height = attenuated + '%';
+      bpVisVal.textContent = '+' + Math.round(bpV) + '%';
+      bpPriceVal.textContent = '+' + Math.round(attenuated) + '%';
+    }
+    let bpDragging = false, bpStartX = 0, bpStartY = 0, bpStartV = 0;
+    bpHandle.addEventListener('pointerdown', (e) => {
+      bpDragging = true; bpStartX = e.clientX; bpStartY = e.clientY; bpStartV = bpV;
+      bpHandle.setPointerCapture(e.pointerId);
+    });
+    bpHandle.addEventListener('pointermove', (e) => {
+      if(!bpDragging) return;
+      const dx = e.clientX - bpStartX, dy = e.clientY - bpStartY;
+      const delta = (dx + dy) / 2;
+      bpV = Math.max(0, Math.min(100, bpStartV + delta * 0.7));
+      renderBp();
+    });
+    function bpEndDrag(){ bpDragging = false; }
+    bpHandle.addEventListener('pointerup', bpEndDrag);
+    bpHandle.addEventListener('pointercancel', bpEndDrag);
+    renderBp();
+  }catch(e){ console.error('[blueprint]', e); }
+})();
+
+// ---- 3. editoriale: un font casuale alla volta, parola per parola, in sequenza ----
+(function(){
+  try{
+    const edWords = ['Che','la','forza','sia','con','te'];
+    const elaboratePool = [
+      { name:"'Playfair Display', serif", weight:700, style:'italic' },
+      { name:"'Caveat', cursive", weight:700, style:'normal' },
+      { name:"'Bangers', cursive", weight:400, style:'normal' },
+      { name:"'Monoton', cursive", weight:400, style:'normal' },
+      { name:"'Fraunces', serif", weight:700, style:'italic' }
+    ];
+    const simplePool = [
+      { name:"'JetBrains Mono', monospace", weight:500, style:'normal' },
+      { name:"'Inter', sans-serif", weight:400, style:'normal' },
+      { name:"Arial, Helvetica, sans-serif", weight:400, style:'normal' }
+    ];
+    const defaultFont = { name:"'Inter', sans-serif", weight:600, style:'normal' };
+    let edWordFont = edWords.map(() => defaultFont);
+    let edWordWeight = edWords.map(() => 15); // 0-100, peso illustrativo di "complessità"
+    let edPointer = 0;
+    let edClicks = 0;
+    const edPhrase = document.getElementById('edPhrase');
+
+    function renderEdPhrase(){
+      edPhrase.innerHTML = '';
+      edWords.forEach((w, i) => {
+        const span = document.createElement('span');
+        span.className = 'ed-word';
+        const f = edWordFont[i];
+        span.style.fontFamily = f.name;
+        span.style.fontWeight = f.weight;
+        span.style.fontStyle = f.style;
+        span.textContent = w;
+        edPhrase.appendChild(span);
+      });
+      const minW = Math.min(...edWordWeight), maxW = Math.max(...edWordWeight);
+      const pull = edClicks >= 3 ? Math.min(0.55, (edClicks - 2) * 0.12) : 0;
+      const rawP1 = 10 + minW * 0.8;
+      const rawP2 = 10 + maxW * 0.8;
+      const p1 = rawP1 + (50 - rawP1) * pull;
+      const p2 = rawP2 + (50 - rawP2) * pull;
+      document.getElementById('edDot1').style.left = p1 + '%';
+      document.getElementById('edDot2').style.left = p2 + '%';
+      document.getElementById('edLabel1').textContent = minW < 40 ? 'semplice' : 'elaborato';
+      document.getElementById('edLabel2').textContent = maxW < 40 ? 'semplice' : 'elaborato';
+    }
+
+    function applyToCurrentWord(pool, weightRange){
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      edWordFont[edPointer] = pick;
+      edWordWeight[edPointer] = weightRange[0] + Math.random() * (weightRange[1] - weightRange[0]);
+      edPointer = (edPointer + 1) % edWords.length;
+      edClicks++;
+      renderEdPhrase();
+    }
+
+    document.getElementById('edMore').addEventListener('click', () => applyToCurrentWord(elaboratePool, [65, 100]));
+    document.getElementById('edLess').addEventListener('click', () => applyToCurrentWord(simplePool, [0, 30]));
+    renderEdPhrase();
+  }catch(e){ console.error('[editoriale]', e); }
+})();
+
+// ---- 4. comics: icone che si aggiungono, forma SVG vera, posizione casuale ----
+(function(){
+  try{
+    const cxRow = document.getElementById('cxRow');
+    const balloonPath = "M18,4 H102 Q116,4 116,18 V48 Q116,62 102,62 H46 L34,92 L30,62 H18 Q4,62 4,48 V18 Q4,4 18,4 Z";
+    const starPoints = "60.0,8.0 79.0,27.1 105.0,34.0 98.0,60.0 105.0,86.0 79.0,92.9 60.0,112.0 41.0,92.9 15.0,86.0 22.0,60.0 15.0,34.0 41.0,27.1";
+    let cxCount = 0;
+    const cxPlaced = []; // centri già occupati, per tentare di distanziare i nuovi badge
+    document.getElementById('cxAdd').addEventListener('click', () => {
+      if(cxCount >= 8) return;
+      cxCount++;
+      const isFull = cxCount <= 2;
+      const el = document.createElement('div');
+      el.className = 'cx-badge ' + (isFull ? 'full' : 'disc');
+
+      const badgeW = 116, badgeH = 92;
+      const rowW = cxRow.clientWidth || 400;
+      const rowH = 190;
+      const maxLeft = Math.max(0, rowW - badgeW);
+      const maxTop = Math.max(0, rowH - badgeH);
+
+      // prova alcune posizioni casuali, tiene quella più lontana dai badge già piazzati
+      let bestLeft = Math.random() * maxLeft, bestTop = Math.random() * maxTop, bestDist = -1;
+      const attempts = cxPlaced.length === 0 ? 1 : 12;
+      for(let a = 0; a < attempts; a++){
+        const tryLeft = Math.random() * maxLeft, tryTop = Math.random() * maxTop;
+        const cx = tryLeft + badgeW/2, cy = tryTop + badgeH/2;
+        let minDist = Infinity;
+        cxPlaced.forEach(p => {
+          const d = Math.hypot(cx - p.x, cy - p.y);
+          if(d < minDist) minDist = d;
+        });
+        if(minDist > bestDist){ bestDist = minDist; bestLeft = tryLeft; bestTop = tryTop; }
+      }
+      cxPlaced.push({ x: bestLeft + badgeW/2, y: bestTop + badgeH/2 });
+
+      const rot = (Math.random() * 24 - 12).toFixed(1);
+      el.style.left = bestLeft + 'px';
+      el.style.top = bestTop + 'px';
+      el.style.transform = 'rotate(' + rot + 'deg)';
+      el.style.zIndex = cxCount;
+
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox', '0 0 120 120');
+      if(isFull){
+        svg.setAttribute('viewBox', '0 0 120 96');
+        const path = document.createElementNS(svgNS, 'path');
+        path.setAttribute('d', balloonPath);
+        path.setAttribute('class', 'cx-shape');
+        svg.appendChild(path);
+      }else{
+        const poly = document.createElementNS(svgNS, 'polygon');
+        poly.setAttribute('points', starPoints);
+        poly.setAttribute('class', 'cx-shape');
+        svg.appendChild(poly);
+      }
+      el.appendChild(svg);
+
+      const label = document.createElement('div');
+      label.className = 'cx-label';
+      label.textContent = isFull ? 'prezzo pieno' : 'prezzo scontato';
+      el.appendChild(label);
+
+      cxRow.appendChild(el);
+    });
+  }catch(e){ console.error('[comics]', e); }
+})();
 
 // ---- 5. neon: barre a sconto crescente ----
-const neonBars = document.getElementById('neonBars');
-let neonCount = 3;
-function renderNeon(){
-  neonBars.innerHTML = '';
-  for(let i=0;i<neonCount;i++){
-    const h = i<2 ? 100 : Math.max(20, 100 - (i-1)*11);
-    const bar = document.createElement('div');
-    bar.className = 'neon-bar';
-    bar.style.height = h+'%';
-    neonBars.appendChild(bar);
-  }
-}
-document.getElementById('neonMore').addEventListener('click', () => {
-  if(neonCount < 12) neonCount++;
-  renderNeon();
-});
-renderNeon();
+(function(){
+  try{
+    const neonBars = document.getElementById('neonBars');
+    const neonBtn = document.getElementById('neonMore');
+    const neonStart = performance.now(); // orologio condiviso: tutte le barre si agganciano allo stesso ciclo
+    const neonCycle = 9; // deve combaciare con la durata di neonHueCycle in secondi
+    let neonCount = 3;
+    function renderNeon(){
+      neonBars.innerHTML = '';
+      const elapsed = ((performance.now() - neonStart) / 1000) % neonCycle;
+      for(let i=0;i<neonCount;i++){
+        const h = i<2 ? 100 : Math.max(20, 100 - (i-1)*11);
+        const bar = document.createElement('div');
+        bar.className = 'neon-bar';
+        bar.style.animationDelay = '-' + elapsed.toFixed(2) + 's'; // stesso punto del ciclo per tutte, niente reset visibile
+        bar.style.height = h+'%';
+        neonBars.appendChild(bar);
+      }
+    }
+    function addBar(){
+      if(neonCount < 12) neonCount++;
+      renderNeon();
+    }
+    neonBtn.addEventListener('click', addBar);
+    neonBtn.onclick = addBar; // rete di sicurezza, ridondante ma innocua
+    renderNeon();
+  }catch(e){ console.error('[neon]', e); }
+})();
 
-// ---- 6. nature: gauge verso il tetto ----
-let natCount = 0;
-document.getElementById('natAdd').addEventListener('click', () => {
-  natCount++;
-  if(natCount >= 4){
-    document.getElementById('natFlag').classList.add('show');
-  }
-});
+// ---- 6. natura: bandierina che sale fino alla vetta ----
+(function(){
+  try{
+    let natCount = 0;
+    const natMaxSteps = 5;
+    const poleBaseStart = 125; // y del fondo dell'asta (quella che si pianta) a riposo
+    const peakY = 15;          // y della vetta nel viewBox
+    const totalDelta = peakY - poleBaseStart; // negativo: la base sale fino a piantarsi in vetta
+    document.getElementById('natAdd').addEventListener('click', () => {
+      natCount = Math.min(natMaxSteps, natCount + 1);
+      const t = natCount / natMaxSteps;
+      const y = totalDelta * t;
+      document.getElementById('natFlagpole').style.transform = 'translateY(' + y + 'px)';
+      if(natCount >= natMaxSteps){
+        document.getElementById('natFlag').classList.add('waving');
+      }
+    });
+    // il vento cambia verso ogni volta che la nuvola inverte la rotta (stesso periodo dell'animazione della nuvola)
+    setInterval(() => {
+      const flag = document.getElementById('natFlag');
+      if(flag) flag.classList.toggle('wind-alt');
+    }, 11000);
+  }catch(e){ console.error('[natura]', e); }
+})();
 </script>
 </body>
 </html>
