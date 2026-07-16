@@ -6,7 +6,7 @@
 <title>Dial — Configuratore Tag</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Great+Vibes&family=Playfair+Display:wght@600;700&family=Caveat:wght@500;700&family=Oswald:wght@500;700&family=Quicksand:wght@500;700&family=Cinzel:wght@600;700&family=Permanent+Marker&family=Pinyon+Script&family=Parisienne&family=Baloo+2:wght@700&family=Fredoka:wght@600&family=Bungee&family=Bangers&family=Courier+Prime:wght@400;700&family=Special+Elite&family=Rye&family=Sancreek&family=UnifrakturMaguntia&family=MedievalSharp&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Great+Vibes&family=Playfair+Display:wght@600;700&family=Caveat:wght@500;700&family=Oswald:wght@500;700&family=Quicksand:wght@500;700&family=Cinzel:wght@600;700&family=Permanent+Marker&family=Pinyon+Script&family=Parisienne&family=Baloo+2:wght@700&family=Fredoka:wght@600&family=Bungee&family=Bangers&family=Courier+Prime:wght@400;700&family=Special+Elite&family=Rye&family=Sancreek&family=UnifrakturMaguntia&family=MedievalSharp&family=Monoton&family=Fraunces:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/opentype.js/1.3.4/opentype.min.js"></script>
 <style>
 :root{
@@ -227,7 +227,7 @@ body{ margin:0; background:var(--bg); color:var(--text-1); font-family:var(--fon
 .price-panel{ display:none; width:280px; max-height:60vh; overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px; box-shadow:0 8px 26px rgba(0,0,0,0.45); }
 .price-panel.open{ display:block; }
 .price-panel h4{ margin:0 0 8px; font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-3); font-weight:500; }
-.price-soglia{ display:flex; gap:8px; padding:6px 0; border-bottom:1px solid var(--line); align-items:flex-start; }
+.price-soglia{ display:flex; gap:8px; padding:9px 14px; margin:0 -14px 2px; align-items:flex-start; }
 .price-soglia:last-child{ border-bottom:none; }
 .price-soglia .dot{ flex-shrink:0; width:14px; height:14px; border-radius:50%; border:1.5px solid var(--steel-3); margin-top:2px; }
 .price-soglia.on .dot{ background:var(--ember); border-color:var(--ember); }
@@ -1206,21 +1206,27 @@ function updatePriceWidget(){
   const { sg, totale, s5, price } = computeTagPrice();
 
   const soglieDefs = [
-    { on: true, always: true, txt: `<b>Soglia base</b> — sempre attiva` },
-    { on: sg.s1, txt: `<b>Soglia 1</b> — attenua l'effetto della dimensione (attiva da 3 elementi misti)` },
-    { on: sg.s2, txt: `<b>Soglia 2</b> — comprime i font verso la media (attiva da 3 blocchi di testo)` },
-    { on: sg.s3, txt: `<b>Soglia 3</b> — sconto sulle icone oltre le prime 2 (attiva da 5 icone)` },
-    { on: sg.s4, txt: `<b>Soglia 4</b> — sconto graduale per rank (attiva da 10 icone)` },
-    { on: s5, txt: `<b>Soglia 5</b> — prezzo fisso ${fmtPrice(SOGLIA5_PREZZO)} oltre ${SOGLIA5_TETTO} pt` }
+    { on: true, always: true, name: 'Soglia base', nameFont: "'Caveat', cursive", nameWeight: 700, nameStyle: 'normal', nameSize: '16px', nameColor: '#3a2f1c',
+      bg: '#f3ecda', descColor: '#54492f', descFont: "'Inter', sans-serif", txt: `— sempre attiva` },
+    { on: sg.s1, name: 'Soglia 1', nameFont: "'JetBrains Mono', monospace", nameWeight: 700, nameStyle: 'normal', nameSize: '11.5px', nameColor: '#dceaf5',
+      bg: '#0e3554', descColor: '#a9c8dc', descFont: "'JetBrains Mono', monospace", txt: `attenua l'effetto della dimensione (attiva da 3 elementi misti)` },
+    { on: sg.s2, name: 'Soglia 2', nameFont: "'Playfair Display', serif", nameWeight: 700, nameStyle: 'normal', nameSize: '12px', nameColor: '#1c1a17',
+      bg: '#f6f4ee', descColor: '#4d483f', descFont: "'Inter', sans-serif", txt: `comprime i font verso la media (attiva da 3 blocchi di testo)` },
+    { on: sg.s3, name: 'Soglia 3', nameFont: "'Bangers', cursive", nameWeight: 400, nameStyle: 'normal', nameSize: '9.5px', nameColor: '#1a1a1a',
+      bg: '#fce23c', descColor: '#2a2a2a', descFont: "'Inter', sans-serif", txt: `sconto sulle icone oltre le prime 2 (attiva da 5 icone)` },
+    { on: sg.s4, name: 'Soglia 4', nameFont: "'Monoton', cursive", nameWeight: 400, nameStyle: 'normal', nameSize: '13px', nameColor: '#4be8ff',
+      nameGlow: '0 0 6px #4be8ff88, 0 0 18px #4be8ff44', bg: '#0a0a0d', descColor: '#c9c4d6', descFont: "'Inter', sans-serif", txt: `sconto graduale per rank (attiva da 10 icone)` },
+    { on: s5, name: 'Soglia 5', nameFont: "'Fraunces', serif", nameWeight: 700, nameStyle: 'italic', nameSize: '12px', nameColor: '#25361f',
+      bg: 'linear-gradient(180deg,#bcd9e8 0%,#e7eee0 100%)', descColor: '#41503e', descFont: "'Inter', sans-serif", txt: `prezzo fisso ${fmtPrice(SOGLIA5_PREZZO)} oltre ${SOGLIA5_TETTO} pt` }
   ];
 
   box.innerHTML = `
     <div class="price-panel ${priceWidgetOpen ? 'open' : ''}" id="pricePanel">
       <h4>Soglie attive</h4>
       ${soglieDefs.map(s => `
-        <div class="price-soglia ${s.on ? 'on' : ''}">
+        <div class="price-soglia ${s.on ? 'on' : ''}" style="background:${s.bg};">
           <span class="dot"></span>
-          <span class="label">${s.txt}</span>
+          <span class="label" style="font-family:${s.descFont}; color:${s.descColor};"><b style="font-family:${s.nameFont}; font-weight:${s.nameWeight}; font-style:${s.nameStyle}; font-size:${s.nameSize}; color:${s.nameColor}; ${s.nameGlow ? 'text-shadow:'+s.nameGlow+';' : ''}">${s.name}</b> — ${s.txt}</span>
         </div>
       `).join('')}
       <div class="price-breakdown">
