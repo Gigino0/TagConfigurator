@@ -1203,7 +1203,7 @@ function fmtPrice(n){ return n.toFixed(2).replace('.', ',') + ' €'; }
 function updatePriceWidget(){
   const box = document.getElementById('priceWidget');
   if(!box) return;
-  const { sg, totale, s5, price } = computeTagPrice();
+  const { sg, iconScore, textScore, totale, s5, price } = computeTagPrice();
 
   const soglieDefs = [
     { on: true, always: true, name: 'Soglia base', nameFont: "'Caveat', cursive", nameWeight: 700, nameStyle: 'normal', nameSize: '16px', nameColor: '#3a2f1c',
@@ -1260,11 +1260,52 @@ function updatePriceWidget(){
           s2: sg.s2,
           s3: sg.s3,
           s4: sg.s4,
-          s5: s5
+          s5: s5,
+          icons: iconScore.rows.map(r => {
+            const icon = findIcon(r.el.iconId);
+            return {
+              size: r.el.size,
+              coeff: r.coeff,
+              mult: r.mult,
+              rank: r.rank,
+              discount: r.posDiscount,
+              subtotal: r.subtotal,
+              d: icon.d || '',
+              extra: icon.extra || ''
+            };
+          }),
+          texts: textScore.rows.map(r => {
+            const f = fontById(r.el.fontId);
+            return {
+              content: r.el.content,
+              size: r.el.size,
+              chars: r.chars,
+              coeffBase: r.coeffBase,
+              coeffEff: r.coeffEff,
+              mult: r.mult,
+              subtotal: r.subtotal,
+              fontFamily: f.family,
+              fontWeight: f.weight
+            };
+          })
         };
-        localStorage.setItem('dialTagPriceSnapshot', JSON.stringify(snapshot));
-      }catch(err){}
-      window.open('pricing.html', '_blank');
+        const snapJson = JSON.stringify(snapshot);
+        let hashPart = '';
+        try{
+          localStorage.setItem('dialTagPriceSnapshot', snapJson);
+        }catch(err){}
+        try{
+          // Rete di sicurezza: passiamo lo snapshot anche via URL hash.
+          // Serve quando localStorage non è condiviso tra le due pagine
+          // (es. apertura diretta dei file via doppio click, protocollo file://,
+          // dove ogni file:// ha un'origine a sé e localStorage non comunica).
+          // Il hash non viene mai inviato al server, quindi va bene anche in produzione.
+          hashPart = '#snap=' + encodeURIComponent(snapJson);
+        }catch(err){}
+        window.open('pricing.html' + hashPart, '_blank');
+      }catch(err){
+        window.open('pricing.html', '_blank');
+      }
     });
   }
 }
